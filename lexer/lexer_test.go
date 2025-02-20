@@ -30,5 +30,8 @@ func TestNextToken(t *testing.T) {
 
 	for i, tt := range tests {
 		tok := l.NextToken()
+
+		assert.Equal(tt.expectedType, tok.Type, "tests[%d] - tokentype wrong. expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		assert.Equal(tt.expectedLiteral, tok.Literal, "tests[%d] - literal wrong. expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
 	}
 }
