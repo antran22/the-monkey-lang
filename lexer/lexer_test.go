@@ -1,37 +1,28 @@
 package lexer
 
 import (
-	"monkey/token"
+	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
+var testCases = []lexerTestCase{
+	testCase1,
+	testCase2,
+	testCase3,
+}
+
 func TestNextToken(t *testing.T) {
-	assert := assert.New(t)
-	input := "=+(){},;"
-
-	tests := []struct {
-		expectedType    token.TokenType
-		expectedLiteral string
-	}{
-		{token.ASSIGN, "="},
-		{token.PLUS, "+"},
-		{token.LPAREN, "("},
-		{token.RPAREN, ")"},
-		{token.LBRACE, "{"},
-		{token.RBRACE, "}"},
-		{token.COMMA, ","},
-		{token.SEMICOLON, ";"},
-		{token.EOF, ""},
-	}
-
-	l := NewLexer(input)
-
-	for i, tt := range tests {
-		tok := l.NextToken()
-
-		assert.Equal(tt.expectedType, tok.Type, "tests[%d] - tokentype wrong. expected=%q, got=%q", i, tt.expectedType, tok.Type)
-		assert.Equal(tt.expectedLiteral, tok.Literal, "tests[%d] - literal wrong. expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+	for i, testCase := range testCases {
+		t.Run(fmt.Sprintf("test_case_%d", i+1), func(tt *testing.T) {
+			assert := require.New(tt)
+			l := NewLexer(testCase.input)
+			for i, tokenTest := range testCase.tokens {
+				tok := l.NextToken()
+				assert.Equal(tokenTest.expectedType, tok.Type, "tests[%d] - tokentype wrong. expected=%q, got=%q, literal=%q", i, tokenTest.expectedType, tok.Type, tok.Literal)
+				assert.Equal(tokenTest.expectedLiteral, tok.Literal, "tests[%d] - literal wrong. expected=%q, got=%q", i, tokenTest.expectedLiteral, tok.Literal)
+			}
+		})
 	}
 }
