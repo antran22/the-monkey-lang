@@ -16,8 +16,8 @@ return 5;
 return 10;
 return 993322;
 `
-	l := lexer.NewLexer(input)
-	p := parser.NewParser(l)
+	l := lexer.New(input)
+	p := parser.New(l)
 
 	program := p.ParseProgram()
 

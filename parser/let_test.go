@@ -17,8 +17,8 @@ let y = 10;
 let foobar = 838383;
 `
 
-	l := lexer.NewLexer(input)
-	p := parser.NewParser(l)
+	l := lexer.New(input)
+	p := parser.New(l)
 
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
@@ -60,12 +60,12 @@ let y 10;
 let 838383;
 `
 
-	l := lexer.NewLexer(input)
-	p := parser.NewParser(l)
+	l := lexer.New(input)
+	p := parser.New(l)
 
 	p.ParseProgram()
 
 	errors := p.Errors()
 
-	r.Len(errors, 3)
+	r.Len(errors, 4)
 }

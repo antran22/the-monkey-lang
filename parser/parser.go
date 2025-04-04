@@ -7,6 +7,11 @@ import (
 	"monkey/token"
 )
 
+type (
+	prefixParseFn func() ast.Expression
+	infixParseFn  func(ast.Expression) ast.Expression
+)
+
 type Parser struct {
 	l *lexer.Lexer
 
@@ -14,16 +19,39 @@ type Parser struct {
 	peekToken token.Token
 
 	errors []string
+
+	prefixParseFns map[token.TokenType]prefixParseFn
+	infixParseFns  map[token.TokenType]infixParseFn
 }
 
-func NewParser(l *lexer.Lexer) *Parser {
+// Configuration and accessors
+func New(l *lexer.Lexer) *Parser {
 	p := &Parser{l: l, errors: []string{}}
 	p.nextToken()
 	p.nextToken()
 
+	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
+	p.registerPrefix(token.IDENT, p.parseIdentifier)
+	p.registerPrefix(token.INT, p.parseIntegerLiteral)
+	p.registerPrefix(token.BANG, p.parsePrefixExpression)
+	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
+
 	return p
 }
 
+func (p *Parser) Errors() []string {
+	return p.errors
+}
+
+func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
+	p.prefixParseFns[tokenType] = fn
+}
+
+func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
+	p.infixParseFns[tokenType] = fn
+}
+
+// Parsing functions
 func (p *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{}
@@ -37,15 +65,6 @@ func (p *Parser) ParseProgram() *ast.Program {
 	return program
 }
 
-func (p *Parser) Errors() []string {
-	return p.errors
-}
-
-func (p *Parser) nextToken() {
-	p.curToken = p.peekToken
-	p.peekToken = p.l.NextToken()
-}
-
 func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.RETURN:
@@ -53,42 +72,15 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.LET:
 		return p.parseLetStatement()
 	default:
-		return nil
+		return p.parseExpressionStatement()
 	}
 }
 
-func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
-	stmt := &ast.ReturnStatement{Token: p.curToken}
-	p.nextToken()
+// Token iteration functions
 
-	// Todo: parse the expression here
-
-	for !p.curTokenIs(token.SEMICOLON) {
-		p.nextToken()
-	}
-
-	return stmt
-}
-
-func (p *Parser) parseLetStatement() *ast.LetStatement {
-	stmt := &ast.LetStatement{Token: p.curToken}
-	if !p.expectPeek(token.IDENT) {
-		return nil
-	}
-
-	stmt.Name = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
-
-	if !p.expectPeek(token.ASSIGN) {
-		return nil
-	}
-
-	// todo: fill in more detail to parse the expression
-
-	for !p.curTokenIs(token.SEMICOLON) {
-		p.nextToken()
-	}
-
-	return stmt
+func (p *Parser) nextToken() {
+	p.curToken = p.peekToken
+	p.peekToken = p.l.NextToken()
 }
 
 func (p *Parser) curTokenIs(t token.TokenType) bool {
@@ -108,7 +100,14 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 	return false
 }
 
+// error handling
+
 func (p *Parser) peekError(t token.TokenType) {
-	msg := fmt.Sprintf(("expected next token to be %s, got %s instead"), t, p.peekToken.Type)
+	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.peekToken.Type)
+	p.errors = append(p.errors, msg)
+}
+
+func (p *Parser) noPrefixParseFnError(t token.TokenType) {
+	msg := fmt.Sprintf("no prefix parse fn found for %s", t)
 	p.errors = append(p.errors, msg)
 }

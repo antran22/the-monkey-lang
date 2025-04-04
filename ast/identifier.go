@@ -3,9 +3,15 @@ package ast
 import "monkey/token"
 
 type Identifier struct {
-	Token token.Token // the token.IDENT token
+	Token token.Token
 	Value string
+}
+
+func (i *Identifier) String() string {
+	return i.Value
 }
 
 func (i *Identifier) expressionNode()      {}
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
+
+var _ Node = (*Identifier)(nil)
