@@ -1,7 +1,55 @@
 package parser_test
 
-import "testing"
+import (
+	"monkey/ast"
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
 
 func TestIfExpression(t *testing.T) {
+	r := require.New(t)
+
 	input := `if (x < y) { x }`
+
+	program := makeProgram(input, t)
+	r.Len(program.Statements, 1)
+	stmt := testExpression(t, program.Statements[0])
+
+	exp, ok := stmt.Expression.(*ast.IfExpression)
+	r.True(ok, "exp is not *ast.IfExpression")
+
+	testInfixExpression(t, exp.Condition, "x", "<", "y")
+
+	r.NotNil(exp.ThenBranch)
+	r.Len(exp.ThenBranch.Statements, 1)
+	stmtExp := testExpression(t, exp.ThenBranch.Statements[0])
+	testIdentifier(t, stmtExp.Expression, "x")
+
+	r.Nil(exp.ElseBranch)
+}
+
+func TestIfElseExpression(t *testing.T) {
+	r := require.New(t)
+
+	input := `if (x < y) { x } else { y }`
+
+	program := makeProgram(input, t)
+	r.Len(program.Statements, 1)
+	stmt := testExpression(t, program.Statements[0])
+
+	exp, ok := stmt.Expression.(*ast.IfExpression)
+	r.True(ok, "exp is not *ast.IfExpression")
+
+	testInfixExpression(t, exp.Condition, "x", "<", "y")
+
+	r.NotNil(exp.ThenBranch)
+	r.Len(exp.ThenBranch.Statements, 1)
+	thenStmtExp := testExpression(t, exp.ThenBranch.Statements[0])
+	testIdentifier(t, thenStmtExp.Expression, "x")
+
+	r.NotNil(exp.ElseBranch)
+	r.Len(exp.ElseBranch.Statements, 1)
+	elseStmtExp := testExpression(t, exp.ElseBranch.Statements[0])
+	testIdentifier(t, elseStmtExp.Expression, "y")
 }

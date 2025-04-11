@@ -8,7 +8,7 @@ import (
 type IfExpression struct {
 	Token      token.Token
 	Condition  Expression
-	TrueBranch *BlockStatement
+	ThenBranch *BlockStatement
 	ElseBranch *BlockStatement
 }
 
@@ -18,12 +18,14 @@ func (i *IfExpression) String() string {
 	out.WriteString("if")
 	out.WriteString(i.Condition.String())
 	out.WriteString(" ")
-	out.WriteString(i.TrueBranch.String())
+	out.WriteString(i.ThenBranch.String())
 
 	if i.ElseBranch != nil {
 		out.WriteString(" else ")
 		out.WriteString(i.ElseBranch.String())
 	}
+
+	return out.String()
 }
 
 func (i *IfExpression) TokenLiteral() string {

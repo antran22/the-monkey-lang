@@ -25,7 +25,7 @@ func TestParsingPrefixExpressions(t *testing.T) {
 
 			r.Len(program.Statements, 1)
 
-			stmt := testExpression(program.Statements[0], r)
+			stmt := testExpression(t, program.Statements[0])
 
 			exp, ok := stmt.Expression.(*ast.PrefixExpression)
 			r.True(ok, "exp is not *ast.PrefixExpression. got=%T", stmt.Expression)
@@ -65,7 +65,7 @@ func TestParsingInfixExpressions(t *testing.T) {
 
 			r.Len(program.Statements, 1)
 
-			stmt := testExpression(program.Statements[0], r)
+			stmt := testExpression(t, program.Statements[0])
 
 			testInfixExpression(pt, stmt.Expression, tt.leftValue, tt.operator, tt.rightValue)
 		})

@@ -14,8 +14,7 @@ func TestIdentifierExpression(t *testing.T) {
 	program := makeProgram(input, t)
 
 	r.Len(program.Statements, 1)
-
-	stmt := testExpression(program.Statements[0], r)
+	stmt := testExpression(t, program.Statements[0])
 	testLiteralExpression(t, stmt.Expression, "foobar")
 }
 
@@ -26,9 +25,7 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	program := makeProgram(input, t)
 
 	r.Len(program.Statements, 1)
-
-	stmt := testExpression(program.Statements[0], r)
-
+	stmt := testExpression(t, program.Statements[0])
 	testLiteralExpression(t, stmt.Expression, 5)
 }
 
@@ -43,12 +40,10 @@ func TestBooleanLiteralExpression(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("boolean_test_%t", tc.value), func(st *testing.T) {
-			r := require.New(t)
-
 			program := makeProgram(tc.input, t)
-			r.Len(program.Statements, 1)
+			require.Len(t, program.Statements, 1)
 
-			stmt := testExpression(program.Statements[0], r)
+			stmt := testExpression(t, program.Statements[0])
 
 			testLiteralExpression(t, stmt.Expression, tc.value)
 		})

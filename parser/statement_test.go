@@ -9,6 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// Let statement
+
 func TestLetStatements(t *testing.T) {
 	r := require.New(t)
 	input := `
@@ -17,11 +19,7 @@ let y = 10;
 let foobar = 838383;
 `
 
-	l := lexer.New(input)
-	p := parser.New(l)
-
-	program := p.ParseProgram()
-	checkParserErrors(t, p)
+	program := makeProgram(input, t)
 
 	r.NotNil(program)
 
@@ -68,4 +66,44 @@ let 838383;
 	errors := p.Errors()
 
 	r.Len(errors, 4)
+}
+
+// Return statement
+
+func TestReturnStatements(t *testing.T) {
+	r := require.New(t)
+	input := `
+return 5;
+return 10;
+return 993322;
+`
+
+	program := makeProgram(input, t)
+
+	r.Len(program.Statements, 3)
+
+	for _, stmt := range program.Statements {
+		returnStmt, ok := stmt.(*ast.ReturnStatement)
+		r.True(ok, "stmt not *ast.ReturnStatement. got=%T", stmt)
+		r.Equal("return", returnStmt.TokenLiteral())
+	}
+}
+
+// Block Statement
+
+func TestBlockStatement(t *testing.T) {
+	r := require.New(t)
+
+	input := `{
+let x = 1;
+return 2;
+}`
+
+	program := makeProgram(input, t)
+	r.Len(program.Statements, 1)
+
+	bl, ok := program.Statements[0].(*ast.BlockStatement)
+
+	r.Truef(ok, "not an *ast.BlockStatement")
+	r.Len(bl.Statements, 2)
 }
