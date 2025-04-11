@@ -18,6 +18,8 @@ type LetStatement struct {
 	Value Expression
 }
 
+var _ Statement = (*LetStatement)(nil) // interface check
+
 func (ls *LetStatement) String() string {
 	var out bytes.Buffer
 
@@ -41,14 +43,14 @@ func (ls *LetStatement) TokenLiteral() string {
 	return ls.Token.Literal
 }
 
-var _ Statement = (*LetStatement)(nil) // interface check
-
 // ReturnStatement
 
 type ReturnStatement struct {
 	Token token.Token
 	Value Expression
 }
+
+var _ Statement = (*ReturnStatement)(nil) // interface check
 
 func (rs *ReturnStatement) String() string {
 	var out bytes.Buffer
@@ -71,4 +73,27 @@ func (rs *ReturnStatement) TokenLiteral() string {
 	return rs.Token.Literal
 }
 
-var _ Statement = (*ReturnStatement)(nil) // interface check
+// BlockStatement
+
+type BlockStatement struct {
+	Token      token.Token
+	Statements []Statement
+}
+
+var _ Statement = (*BlockStatement)(nil) // interface check
+
+func (b *BlockStatement) String() string {
+	var out bytes.Buffer
+
+	for _, s := range b.Statements {
+		out.WriteString(s.String())
+	}
+
+	return out.String()
+}
+
+func (b *BlockStatement) TokenLiteral() string {
+	return b.Token.Literal
+}
+
+func (b *BlockStatement) statementNode() {}

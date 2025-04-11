@@ -14,10 +14,7 @@ type Program struct {
 func (p *Program) String() string {
 	var out bytes.Buffer
 
-	for i, s := range p.Statements {
-		if i > 0 {
-			out.WriteString("\n")
-		}
+	for _, s := range p.Statements {
 		out.WriteString(s.String())
 	}
 
