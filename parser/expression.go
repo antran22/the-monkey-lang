@@ -27,6 +27,7 @@ var tokenPrecendence = map[token.TokenType]precedenceLevel{
 	token.MINUS:    SUM,
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
+	token.LPAREN:   CALL,
 }
 
 // check token precedence

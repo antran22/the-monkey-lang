@@ -16,8 +16,17 @@ func TestLetStatements(t *testing.T) {
 	input := `
 let x = 5;
 let y = 10;
-let foobar = 838383;
+let foobar = y;
 `
+
+	tests := []struct {
+		expectedIdentifier string
+		value              any
+	}{
+		{"x", 5},
+		{"y", 10},
+		{"foobar", "y"},
+	}
 
 	program := makeProgram(input, t)
 
@@ -25,21 +34,17 @@ let foobar = 838383;
 
 	r.Len(program.Statements, 3)
 
-	tests := []struct {
-		expectedIdentifier string
-	}{
-		{"x"},
-		{"y"},
-		{"foobar"},
-	}
-
-	for i, tt := range tests {
+	for i, tc := range tests {
 		stmt := program.Statements[i]
-		assertLetStatement(r, stmt, tt.expectedIdentifier)
+		letStmt := testLetStatement(t, stmt, tc.expectedIdentifier)
+
+		testLiteralExpression(t, letStmt.Value, tc.value)
 	}
 }
 
-func assertLetStatement(r *require.Assertions, s ast.Statement, name string) {
+func testLetStatement(t *testing.T, s ast.Statement, name string) *ast.LetStatement {
+	r := require.New(t)
+
 	r.Equal("let", s.TokenLiteral())
 	letStmt, ok := s.(*ast.LetStatement)
 
@@ -48,6 +53,8 @@ func assertLetStatement(r *require.Assertions, s ast.Statement, name string) {
 	r.Equal(name, letStmt.Name.Value)
 
 	r.Equal(name, letStmt.Name.TokenLiteral())
+
+	return letStmt
 }
 
 func TestFaultyLetStatement(t *testing.T) {
@@ -75,17 +82,25 @@ func TestReturnStatements(t *testing.T) {
 	input := `
 return 5;
 return 10;
-return 993322;
+return y;
 `
+
+	expectedReturns := []any{
+		5,
+		10,
+		"y",
+	}
 
 	program := makeProgram(input, t)
 
 	r.Len(program.Statements, 3)
 
-	for _, stmt := range program.Statements {
+	for i, stmt := range program.Statements {
 		returnStmt, ok := stmt.(*ast.ReturnStatement)
 		r.True(ok, "stmt not *ast.ReturnStatement. got=%T", stmt)
 		r.Equal("return", returnStmt.TokenLiteral())
+
+		testLiteralExpression(t, returnStmt.Value, expectedReturns[i])
 	}
 }
 
