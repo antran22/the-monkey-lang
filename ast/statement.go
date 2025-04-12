@@ -85,9 +85,13 @@ var _ Statement = (*BlockStatement)(nil) // interface check
 func (b *BlockStatement) String() string {
 	var out bytes.Buffer
 
+	out.WriteString("{")
+
 	for _, s := range b.Statements {
 		out.WriteString(s.String())
 	}
+
+	out.WriteString("}")
 
 	return out.String()
 }
