@@ -13,6 +13,7 @@ func (p *Parser) registerTokenTypeParser() {
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.TRUE, p.parseBooleanLiteral)
 	p.registerPrefix(token.FALSE, p.parseBooleanLiteral)
+	p.registerPrefix(token.NULL, p.parseNullLiteral)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
@@ -28,6 +29,8 @@ func (p *Parser) registerTokenTypeParser() {
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
+	p.registerInfix(token.LE, p.parseInfixExpression)
+	p.registerInfix(token.GE, p.parseInfixExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 }
 
@@ -55,7 +58,7 @@ func (p *Parser) parseExpression(precedence precedenceLevel) ast.Expression {
 func (p *Parser) parsePrefixExpression() ast.Expression {
 	expression := &ast.PrefixExpression{
 		Token:    p.curToken,
-		Operator: p.curToken.Literal,
+		Operator: ast.Operator(p.curToken.Literal),
 	}
 
 	p.nextToken()
@@ -80,7 +83,7 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	exp := &ast.InfixExpression{
 		Token:    p.curToken,
-		Operator: p.curToken.Literal,
+		Operator: ast.Operator(p.curToken.Literal),
 		Left:     left,
 	}
 

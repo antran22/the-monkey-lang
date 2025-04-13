@@ -1,9 +1,12 @@
-package lexer
+package lexer_test
 
-import "monkey/token"
+import (
+	"monkey/token"
+	"testing"
+)
 
-var testCase3 = lexerTestCase{
-	input: `!-/*5;
+func TestLexerFull(t *testing.T) {
+	input := `!-/*5;
 5 < 10 > 5;
 
 if (5 < 10) {
@@ -14,8 +17,11 @@ if (5 < 10) {
 
 10 == 10;
 10 != 9;
-`,
-	tokens: []tokenTestExp{
+10 <= 9;
+10 >= 9;
+`
+
+	tokens := []tokenTestExp{
 		{token.BANG, "!"},
 		{token.MINUS, "-"},
 		{token.SLASH, "/"},
@@ -45,14 +51,29 @@ if (5 < 10) {
 		{token.FALSE, "false"},
 		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
+
 		{token.INT, "10"},
 		{token.EQ, "=="},
 		{token.INT, "10"},
 		{token.SEMICOLON, ";"},
+
 		{token.INT, "10"},
 		{token.NOT_EQ, "!="},
 		{token.INT, "9"},
 		{token.SEMICOLON, ";"},
+
+		{token.INT, "10"},
+		{token.LE, "<="},
+		{token.INT, "9"},
+		{token.SEMICOLON, ";"},
+
+		{token.INT, "10"},
+		{token.GE, ">="},
+		{token.INT, "9"},
+		{token.SEMICOLON, ";"},
+
 		{token.EOF, ""},
-	},
+	}
+
+	testLexerTokenization(t, input, tokens)
 }

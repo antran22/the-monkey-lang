@@ -19,7 +19,7 @@ func TestIfExpression(t *testing.T) {
 	exp, ok := stmt.Expression.(*ast.IfExpression)
 	r.True(ok, "exp is not *ast.IfExpression")
 
-	testInfixExpression(t, exp.Condition, "x", "<", "y")
+	testInfixExpression(t, exp.Condition, "x", ast.OP_LT, "y")
 
 	r.NotNil(exp.ThenBranch)
 	r.Len(exp.ThenBranch.Statements, 1)
@@ -32,7 +32,7 @@ func TestIfExpression(t *testing.T) {
 func TestIfElseExpression(t *testing.T) {
 	r := require.New(t)
 
-	input := `if (x < y) { x } else { y }`
+	input := `if (x >= y) { x } else { y }`
 
 	program := makeProgram(input, t)
 	r.Len(program.Statements, 1)
@@ -41,7 +41,7 @@ func TestIfElseExpression(t *testing.T) {
 	exp, ok := stmt.Expression.(*ast.IfExpression)
 	r.True(ok, "exp is not *ast.IfExpression")
 
-	testInfixExpression(t, exp.Condition, "x", "<", "y")
+	testInfixExpression(t, exp.Condition, "x", ast.OP_GE, "y")
 
 	r.NotNil(exp.ThenBranch)
 	r.Len(exp.ThenBranch.Statements, 1)

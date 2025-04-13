@@ -31,7 +31,7 @@ func TestFunctionExpression(t *testing.T) {
 	expStmt, ok := exp.Body.Statements[0].(*ast.ExpressionStatement)
 	r.True(ok, "inner exp is not *ast.ExpressionStatement")
 
-	testInfixExpression(t, expStmt.Expression, "a", "+", "b")
+	testInfixExpression(t, expStmt.Expression, "a", ast.OP_PLUS, "b")
 }
 
 func TestFunctionParameterParsing(t *testing.T) {
@@ -80,6 +80,6 @@ func TestFunctionCallExpression(t *testing.T) {
 	r.Len(exp.Arguments, 3)
 
 	testLiteralExpression(t, exp.Arguments[0], 1)
-	testInfixExpression(t, exp.Arguments[1], 2, "*", 3)
-	testInfixExpression(t, exp.Arguments[2], 4, "+", 5)
+	testInfixExpression(t, exp.Arguments[1], 2, ast.OP_MULTIPLY, 3)
+	testInfixExpression(t, exp.Arguments[2], 4, ast.OP_PLUS, 5)
 }

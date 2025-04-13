@@ -49,3 +49,14 @@ func TestBooleanLiteralExpression(t *testing.T) {
 		})
 	}
 }
+
+func TestNullLiteralExpression(t *testing.T) {
+	r := require.New(t)
+
+	input := "null;"
+	program := makeProgram(input, t)
+
+	r.Len(program.Statements, 1)
+	stmt := testExpression(t, program.Statements[0])
+	testLiteralExpression(t, stmt.Expression, nil)
+}

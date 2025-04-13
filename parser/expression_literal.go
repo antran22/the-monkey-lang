@@ -29,3 +29,7 @@ func (p *Parser) parseBooleanLiteral() ast.Expression {
 		Value: p.curTokenIs(token.TRUE),
 	}
 }
+
+func (p *Parser) parseNullLiteral() ast.Expression {
+	return &ast.NullLiteral{}
+}

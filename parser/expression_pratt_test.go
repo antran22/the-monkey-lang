@@ -29,7 +29,7 @@ func TestParsingPrefixExpressions(t *testing.T) {
 
 			exp, ok := stmt.Expression.(*ast.PrefixExpression)
 			r.True(ok, "exp is not *ast.PrefixExpression. got=%T", stmt.Expression)
-			r.Equal(tt.operator, exp.Operator)
+			r.Equal(ast.Operator(tt.operator), exp.Operator)
 
 			testIntegerLiteral(pt, exp.Right, tt.integerValue)
 		})
@@ -67,7 +67,7 @@ func TestParsingInfixExpressions(t *testing.T) {
 
 			stmt := testExpression(t, program.Statements[0])
 
-			testInfixExpression(pt, stmt.Expression, tt.leftValue, tt.operator, tt.rightValue)
+			testInfixExpression(pt, stmt.Expression, tt.leftValue, ast.Operator(tt.operator), tt.rightValue)
 		})
 	}
 }
@@ -116,6 +116,10 @@ func TestParsingPrecedence(t *testing.T) {
 		{
 			"5 > 4 == 3 < 4",
 			"((5 > 4) == (3 < 4))",
+		},
+		{
+			"5 >= 4 == 3 <= 4",
+			"((5 >= 4) == (3 <= 4))",
 		},
 		{
 			"5 < 4 != 3 > 4",

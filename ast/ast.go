@@ -30,3 +30,26 @@ func (p *Program) TokenLiteral() string {
 }
 
 var _ Node = (*Program)(nil)
+
+// operator
+
+type Operator string
+
+const (
+	// arithmetic
+	OP_PLUS     Operator = "+"
+	OP_MINUS    Operator = "-"
+	OP_MULTIPLY Operator = "*"
+	OP_DIVIDE   Operator = "/"
+
+	// comparative
+	OP_LT  Operator = "<"
+	OP_GT  Operator = ">"
+	OP_LE  Operator = "<="
+	OP_GE  Operator = ">="
+	OP_EQ  Operator = "=="
+	OP_NEQ Operator = "!="
+
+	// logic
+	OP_NEGATE Operator = "!"
+)

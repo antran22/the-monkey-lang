@@ -33,7 +33,7 @@ var _ Statement = (*ExpressionStatement)(nil)
 
 type PrefixExpression struct {
 	Token    token.Token
-	Operator string
+	Operator Operator
 	Right    Expression
 }
 
@@ -41,7 +41,7 @@ func (p *PrefixExpression) String() string {
 	var out bytes.Buffer
 
 	out.WriteString("(")
-	out.WriteString(p.Operator)
+	out.WriteString(string(p.Operator))
 	out.WriteString(p.Right.String())
 	out.WriteString(")")
 
@@ -61,7 +61,7 @@ var _ Expression = (*PrefixExpression)(nil)
 type InfixExpression struct {
 	Token    token.Token
 	Left     Expression
-	Operator string
+	Operator Operator
 	Right    Expression
 }
 
@@ -70,7 +70,7 @@ func (i *InfixExpression) String() string {
 
 	out.WriteString("(")
 	out.WriteString(i.Left.String())
-	out.WriteString(" " + i.Operator + " ")
+	out.WriteString(" " + string(i.Operator) + " ")
 	out.WriteString(i.Right.String())
 	out.WriteString(")")
 

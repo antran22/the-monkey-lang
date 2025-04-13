@@ -38,6 +38,10 @@ func testExpression(t *testing.T, s ast.Statement) *ast.ExpressionStatement {
 }
 
 func testLiteralExpression(t *testing.T, exp ast.Expression, expected any) {
+	if expected == nil {
+		testNullLiteral(t, exp)
+		return
+	}
 	switch v := expected.(type) {
 	case int:
 		testIntegerLiteral(t, exp, v)
@@ -79,6 +83,13 @@ func testIntegerLiteral(t *testing.T, exp ast.Expression, value int) {
 	r.Equal(fmt.Sprintf("%d", value), integ.TokenLiteral())
 }
 
+func testNullLiteral(t *testing.T, exp ast.Expression) {
+	r := require.New(t)
+
+	_, ok := exp.(*ast.NullLiteral)
+	r.Truef(ok, "exp not *ast.NullLiteral. got=%T", exp)
+}
+
 func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) {
 	r := require.New(t)
 
@@ -91,7 +102,7 @@ func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) {
 	r.Equal(fmt.Sprintf("%t", value), b.TokenLiteral())
 }
 
-func testInfixExpression(t *testing.T, exp ast.Expression, left interface{}, operator string, right interface{}) {
+func testInfixExpression(t *testing.T, exp ast.Expression, left interface{}, operator ast.Operator, right interface{}) {
 	r := require.New(t)
 	opExp, ok := exp.(*ast.InfixExpression)
 	r.True(ok, "exp is not an ast.InfixExpression")

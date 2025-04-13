@@ -1,17 +1,20 @@
-package lexer
+package lexer_test
 
-import "monkey/token"
+import (
+	"monkey/token"
+	"testing"
+)
 
-var testCase2 = lexerTestCase{
-	input: `let five = 5;
+func TestLexerStatements(t *testing.T) {
+	input := `let five = 5;
 let ten = 10;
 let add = fn(x, y) {
   x + y;
 };
 
 let result = add(five, ten);
-`,
-	tokens: []tokenTestExp{
+`
+	tokens := []tokenTestExp{
 		{token.LET, "let"},
 		{token.IDENT, "five"},
 		{token.ASSIGN, "="},
@@ -49,5 +52,7 @@ let result = add(five, ten);
 		{token.RPAREN, ")"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
-	},
+	}
+
+	testLexerTokenization(t, input, tokens)
 }
