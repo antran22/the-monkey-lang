@@ -90,3 +90,20 @@ func TestEvalIntegerExpression(t *testing.T) {
 		})
 	}
 }
+
+func TestEvalStringExpression(t *testing.T) {
+	testCases := []struct {
+		input    string
+		expected string
+	}{
+		{`"hello"`, "hello"},
+		{`"hello" + "hi"`, "hellohi"},
+	}
+
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("eval string %s", tc.expected), func(t *testing.T) {
+			evaluated := evalProgram(tc.input)
+			testStringObject(t, evaluated, tc.expected)
+		})
+	}
+}

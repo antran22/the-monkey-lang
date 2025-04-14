@@ -30,6 +30,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.Integer{Value: node.Value}
 	case *ast.BooleanLiteral:
 		return object.NewBoolean(node.Value)
+	case *ast.StringLiteral:
+		return &object.String{Value: node.Value}
 	case *ast.NullLiteral:
 		return object.NULL
 

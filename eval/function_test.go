@@ -63,3 +63,32 @@ applyFn(multiply, 5, 2);
 		})
 	}
 }
+
+func TestBuiltinLen(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected any
+	}{
+		{`len()`, "wrong number of argument for `len`, expected 1, got 0"},
+		{`len("hello")`, 5},
+		{`len("hello world")`, 11},
+		{`len("hello", "hi")`, "wrong number of argument for `len`, expected 1, got 2"},
+		{`len(1)`, "unsupported argument type for `len`: INTEGER"},
+	}
+
+	for _, tc := range tests {
+		t.Run(fmt.Sprintf("function call %s", tc.input), func(t *testing.T) {
+			r := require.New(t)
+
+			evaluated := evalProgram(tc.input)
+			switch expected := tc.expected.(type) {
+			case int:
+				testIntegerObject(t, evaluated, expected)
+			case string:
+				errObj, ok := evaluated.(*object.Error)
+				r.Truef(ok, "evaluated is not a *object.Error, got %T (%v)", evaluated, evaluated)
+				r.Equal(expected, errObj.Message)
+			}
+		})
+	}
+}

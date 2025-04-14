@@ -33,3 +33,10 @@ func (p *Parser) parseBooleanLiteral() ast.Expression {
 func (p *Parser) parseNullLiteral() ast.Expression {
 	return &ast.NullLiteral{}
 }
+
+func (p *Parser) parseStringLiteral() ast.Expression {
+	return &ast.StringLiteral{
+		Token: p.curToken,
+		Value: p.curToken.Literal,
+	}
+}

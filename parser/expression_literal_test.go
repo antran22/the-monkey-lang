@@ -15,7 +15,7 @@ func TestIdentifierExpression(t *testing.T) {
 
 	r.Len(program.Statements, 1)
 	stmt := testExpression(t, program.Statements[0])
-	testLiteralExpression(t, stmt.Expression, "foobar")
+	testIdentifier(t, stmt.Expression, "foobar")
 }
 
 func TestIntegerLiteralExpression(t *testing.T) {
@@ -27,6 +27,17 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	r.Len(program.Statements, 1)
 	stmt := testExpression(t, program.Statements[0])
 	testLiteralExpression(t, stmt.Expression, 5)
+}
+
+func TestStringLiteralExpression(t *testing.T) {
+	r := require.New(t)
+
+	input := "\"abcdef\";"
+	program := makeProgram(input, t)
+
+	r.Len(program.Statements, 1)
+	stmt := testExpression(t, program.Statements[0])
+	testLiteralExpression(t, stmt.Expression, []byte("abcdef"))
 }
 
 func TestBooleanLiteralExpression(t *testing.T) {

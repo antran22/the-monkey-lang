@@ -44,8 +44,23 @@ func evalInfixExpression(left object.Object, operator ast.Operator, right object
 		return evalIntegerInfixExpression(left.(*object.Integer), operator, right.(*object.Integer))
 	case lt == object.BOOLEAN_OBJ && rt == object.BOOLEAN_OBJ:
 		return evalBooleanInfixExpression(left.(*object.Boolean), operator, right.(*object.Boolean))
+	case lt == object.STRING_OBJ && rt == object.STRING_OBJ:
+		return evalStringInfixExpression(left.(*object.String), operator, right.(*object.String))
 	default:
 		return object.NewErrorf("unsupported operation: %s %s %s", lt, operator, rt)
+	}
+}
+
+func evalStringInfixExpression(left *object.String, operator ast.Operator, right *object.String) object.Object {
+	switch operator {
+	case ast.OP_EQ:
+		return object.NewBoolean(left.Value == right.Value)
+	case ast.OP_NEQ:
+		return object.NewBoolean(left.Value != right.Value)
+	case ast.OP_PLUS:
+		return &object.String{Value: left.Value + right.Value}
+	default:
+		return object.NewErrorf("unsupported operation: STRING %s STRING", operator)
 	}
 }
 

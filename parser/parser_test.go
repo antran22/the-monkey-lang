@@ -55,6 +55,8 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected any) {
 	case bool:
 		testBooleanLiteral(t, exp, v)
 		return
+	case []byte:
+		testStringLiteral(t, exp, string(v))
 	default:
 		t.Fatalf("no test function for expected value %#v", expected)
 	}
@@ -70,6 +72,17 @@ func testIdentifier(t *testing.T, exp ast.Expression, value string) {
 	r.Equal(ident.Value, value)
 
 	r.Equal(ident.TokenLiteral(), value)
+}
+
+func testStringLiteral(t *testing.T, exp ast.Expression, value string) {
+	r := require.New(t)
+
+	str, ok := exp.(*ast.StringLiteral)
+	r.Truef(ok, "exp not *ast.StringLiteral. got=%T", exp)
+
+	r.Equal(value, str.Value)
+
+	r.Equal(value, str.TokenLiteral())
 }
 
 func testIntegerLiteral(t *testing.T, exp ast.Expression, value int) {

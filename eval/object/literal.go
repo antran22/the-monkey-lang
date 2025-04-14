@@ -6,7 +6,28 @@ const (
 	INTEGER_OBJ ObjectType = "INTEGER"
 	BOOLEAN_OBJ ObjectType = "BOOLEAN"
 	NULL_OBJ    ObjectType = "NULL"
+	STRING_OBJ  ObjectType = "STRING"
 )
+
+// String
+
+type String struct {
+	Value string
+}
+
+var _ Object = (*String)(nil)
+
+func (s *String) Inspect() string {
+	return s.Value
+}
+
+func (s *String) Type() ObjectType {
+	return STRING_OBJ
+}
+
+func (s *String) IsTruthy() bool {
+	return len(s.Value) > 0
+}
 
 // Integer
 
@@ -34,6 +55,11 @@ type Boolean struct {
 	Value bool
 }
 
+var (
+	TRUE  = &Boolean{Value: true}
+	FALSE = &Boolean{Value: false}
+)
+
 var _ Object = (*Boolean)(nil)
 
 func (b *Boolean) Inspect() string {
@@ -47,11 +73,6 @@ func (b *Boolean) Type() ObjectType {
 func (b *Boolean) IsTruthy() bool {
 	return b.Value
 }
-
-var (
-	TRUE  = &Boolean{Value: true}
-	FALSE = &Boolean{Value: false}
-)
 
 func NewBoolean(value bool) *Boolean {
 	if value {

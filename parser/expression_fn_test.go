@@ -22,8 +22,8 @@ func TestFunctionExpression(t *testing.T) {
 	r.Equal("fn", exp.TokenLiteral())
 
 	r.Len(exp.Parameters, 2)
-	testLiteralExpression(t, exp.Parameters[0], "a")
-	testLiteralExpression(t, exp.Parameters[1], "b")
+	testIdentifier(t, exp.Parameters[0], "a")
+	testIdentifier(t, exp.Parameters[1], "b")
 
 	r.NotNil(exp.Body)
 	r.Len(exp.Body.Statements, 1)
@@ -57,7 +57,7 @@ func TestFunctionParameterParsing(t *testing.T) {
 		r.Equal(len(tc.expectedParams), len(exp.Parameters))
 
 		for i, ident := range tc.expectedParams {
-			testLiteralExpression(t, exp.Parameters[i], ident)
+			testIdentifier(t, exp.Parameters[i], ident)
 		}
 	}
 }

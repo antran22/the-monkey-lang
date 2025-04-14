@@ -38,6 +38,7 @@ func TestErrorHandling(t *testing.T) {
 	}{
 		{"5 + true;", "unsupported operation: INTEGER + BOOLEAN"},
 		{"5 + true; 5", "unsupported operation: INTEGER + BOOLEAN"},
+		{`"hello" - "hi"`, "unsupported operation: STRING - STRING"},
 		{"-true", "unsupported operation: - BOOLEAN"},
 		{"true + false", "unsupported operation: BOOLEAN + BOOLEAN"},
 		{"5; true + false; 5", "unsupported operation: BOOLEAN + BOOLEAN"},
