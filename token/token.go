@@ -13,19 +13,29 @@ const (
 	// Identifiers + literals
 	IDENT = "IDENT" // add, foobar, x, y, ...
 	INT   = "INT"   // 1343456
-	// Operators
-	ASSIGN   = "="
+
+	// Operator
+	ASSIGN = "="
+	// Arithmetic
 	PLUS     = "+"
 	MINUS    = "-"
-	BANG     = "!"
 	ASTERISK = "*"
 	SLASH    = "/"
-	EQ       = "=="
-	NOT_EQ   = "!="
-	LT       = "<"
-	GT       = ">"
-	GE       = ">="
-	LE       = "<="
+	B_AND    = "&"
+	B_OR     = "|"
+	XOR      = "^"
+	// Comparison
+	EQ     = "=="
+	NOT_EQ = "!="
+	LT     = "<"
+	GT     = ">"
+	GE     = ">="
+	LE     = "<="
+	// Logical
+	BANG = "!"
+	AND  = "&&"
+	OR   = "||"
+
 	// Delimiters
 	COMMA     = ","
 	SEMICOLON = ";"

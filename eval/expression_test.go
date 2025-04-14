@@ -28,10 +28,21 @@ func TestEvalBooleanOperator(t *testing.T) {
 		{"1 >= 2", false},
 		{"1 == 1", true},
 		{"1 != 2", true},
+
 		{"true == true", true},
 		{"true == false", false},
 		{"true != false", true},
 		{"true != true", false},
+
+		{"true && true", true},
+		{"true && false", false},
+		{"false && false", false},
+		{"false && true", false},
+
+		{"true || true", true},
+		{"true || false", true},
+		{"false || true", true},
+		{"false || false ", false},
 
 		// mixed
 		{"!(1 == 2)", true},
@@ -67,6 +78,9 @@ func TestEvalIntegerExpression(t *testing.T) {
 		{"3 * 3 * 3 + 10", 37},
 		{"3 * (3 * 3) + 10", 37},
 		{"(5 + 10 * 2 + 15 / 3) * 2 + -10", 50},
+		{"1 & 1", 1},
+		{"1 & 0", 0},
+		{"1 ^ 1", 0},
 	}
 
 	for _, tc := range testCases {

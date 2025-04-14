@@ -10,26 +10,39 @@ type precedenceLevel int
 const (
 	_ precedenceLevel = iota
 	LOWEST
-	EQUALS      // ==
-	LESSGREATER // > or <
-	SUM         // +
-	PRODUCT     // *
-	PREFIX      // -X or !X
-	CALL        // myFunction(X)
+	AND_OR       // && , ||
+	EQUALS       // ==
+	LESS_GREATER // > or <
+	SUM          // +
+	PRODUCT      // *
+	BITWISE      // ^, &, |
+	PREFIX       // -X or !X
+	CALL         // myFunction(X)
 )
 
 var tokenPrecendence = map[token.TokenType]precedenceLevel{
-	token.EQ:       EQUALS,
-	token.NOT_EQ:   EQUALS,
-	token.LT:       LESSGREATER,
-	token.GT:       LESSGREATER,
-	token.LE:       LESSGREATER,
-	token.GE:       LESSGREATER,
-	token.PLUS:     SUM,
-	token.MINUS:    SUM,
+	token.EQ:     EQUALS,
+	token.NOT_EQ: EQUALS,
+
+	token.LT: LESS_GREATER,
+	token.GT: LESS_GREATER,
+	token.LE: LESS_GREATER,
+	token.GE: LESS_GREATER,
+
+	token.AND: AND_OR,
+	token.OR:  AND_OR,
+
+	token.PLUS:  SUM,
+	token.MINUS: SUM,
+
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
-	token.LPAREN:   CALL,
+
+	token.B_AND: BITWISE,
+	token.B_OR:  BITWISE,
+	token.XOR:   BITWISE,
+
+	token.LPAREN: CALL,
 }
 
 // check token precedence

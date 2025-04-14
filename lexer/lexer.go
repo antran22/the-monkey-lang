@@ -22,11 +22,8 @@ func (l *Lexer) NextToken() token.Token {
 
 	switch l.ch {
 	case '=':
-		if l.peekChar() == '=' {
-			ch := l.ch
-			l.readChar()
-			literal := string(ch) + string(l.ch)
-			tok = token.Token{Type: token.EQ, Literal: literal}
+		if digraph, ok := l.expectPeekDigraph('='); ok {
+			tok = token.Token{Type: token.EQ, Literal: digraph}
 		} else {
 			tok = newToken(token.ASSIGN, l.ch)
 		}
@@ -35,11 +32,8 @@ func (l *Lexer) NextToken() token.Token {
 	case '*':
 		tok = newToken(token.ASTERISK, l.ch)
 	case '!':
-		if l.peekChar() == '=' {
-			ch := l.ch
-			l.readChar()
-			literal := string(ch) + string(l.ch)
-			tok = token.Token{Type: token.NOT_EQ, Literal: literal}
+		if digraph, ok := l.expectPeekDigraph('='); ok {
+			tok = token.Token{Type: token.NOT_EQ, Literal: digraph}
 		} else {
 			tok = newToken(token.BANG, l.ch)
 		}
@@ -48,23 +42,31 @@ func (l *Lexer) NextToken() token.Token {
 	case '-':
 		tok = newToken(token.MINUS, l.ch)
 	case '<':
-		if l.peekChar() == '=' {
-			ch := l.ch
-			l.readChar()
-			literal := string(ch) + string(l.ch)
-			tok = token.Token{Type: token.LE, Literal: literal}
+		if digraph, ok := l.expectPeekDigraph('='); ok {
+			tok = token.Token{Type: token.LE, Literal: digraph}
 		} else {
 			tok = newToken(token.LT, l.ch)
 		}
 	case '>':
-		if l.peekChar() == '=' {
-			ch := l.ch
-			l.readChar()
-			literal := string(ch) + string(l.ch)
-			tok = token.Token{Type: token.GE, Literal: literal}
+		if digraph, ok := l.expectPeekDigraph('='); ok {
+			tok = token.Token{Type: token.GE, Literal: digraph}
 		} else {
 			tok = newToken(token.GT, l.ch)
 		}
+	case '&':
+		if digraph, ok := l.expectPeekDigraph('&'); ok {
+			tok = token.Token{Type: token.AND, Literal: digraph}
+		} else {
+			tok = newToken(token.B_AND, l.ch)
+		}
+	case '|':
+		if digraph, ok := l.expectPeekDigraph('|'); ok {
+			tok = token.Token{Type: token.OR, Literal: digraph}
+		} else {
+			tok = newToken(token.B_OR, l.ch)
+		}
+	case '^':
+		tok = newToken(token.XOR, l.ch)
 	case '(':
 		tok = newToken(token.LPAREN, l.ch)
 	case ')':
@@ -113,6 +115,17 @@ func (l *Lexer) peekChar() byte {
 		return 0
 	}
 	return l.input[l.readPosition]
+}
+
+func (l *Lexer) expectPeekDigraph(nextChar byte) (digraph string, ok bool) {
+	if l.peekChar() != nextChar {
+		return "", false
+	}
+
+	ch := l.ch
+	l.readChar()
+	d := string(ch) + string(l.ch)
+	return d, true
 }
 
 func (l *Lexer) readNumber() string {

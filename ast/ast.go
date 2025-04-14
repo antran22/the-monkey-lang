@@ -37,10 +37,13 @@ type Operator string
 
 const (
 	// arithmetic
-	OP_PLUS     Operator = "+"
-	OP_MINUS    Operator = "-"
-	OP_MULTIPLY Operator = "*"
-	OP_DIVIDE   Operator = "/"
+	OP_PLUS        Operator = "+"
+	OP_MINUS       Operator = "-"
+	OP_MULTIPLY    Operator = "*"
+	OP_DIVIDE      Operator = "/"
+	OP_BITWISE_AND Operator = "&"
+	OP_BITWISE_OR  Operator = "|"
+	OP_BITWISE_XOR Operator = "^"
 
 	// comparative
 	OP_LT  Operator = "<"
@@ -52,4 +55,6 @@ const (
 
 	// logic
 	OP_NEGATE Operator = "!"
+	OP_AND    Operator = "&&"
+	OP_OR     Operator = "||"
 )

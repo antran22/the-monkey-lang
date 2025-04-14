@@ -60,6 +60,14 @@ func NewBoolean(value bool) *Boolean {
 	return FALSE
 }
 
+func NewFromObject(obj Object) *Boolean {
+	if obj == TRUE || obj == FALSE {
+		return obj.(*Boolean)
+	}
+
+	return NewBoolean(obj.IsTruthy())
+}
+
 // Null
 
 var NULL = &Null{}

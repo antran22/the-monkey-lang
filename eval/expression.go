@@ -55,6 +55,10 @@ func evalBooleanInfixExpression(left *object.Boolean, operator ast.Operator, rig
 		return object.NewBoolean(left == right)
 	case ast.OP_NEQ:
 		return object.NewBoolean(left != right)
+	case ast.OP_AND:
+		return object.NewBoolean(left.Value && right.Value)
+	case ast.OP_OR:
+		return object.NewBoolean(left.Value || right.Value)
 	default:
 		return object.NewErrorf("unsupported operation: BOOLEAN %s BOOLEAN", operator)
 	}
@@ -71,6 +75,13 @@ func evalIntegerInfixExpression(left *object.Integer, operator ast.Operator, rig
 		return &object.Integer{Value: lv * rv}
 	case ast.OP_DIVIDE:
 		return &object.Integer{Value: lv / rv}
+	case ast.OP_BITWISE_AND:
+		return &object.Integer{Value: lv & rv}
+	case ast.OP_BITWISE_OR:
+		return &object.Integer{Value: lv | rv}
+	case ast.OP_BITWISE_XOR:
+		return &object.Integer{Value: lv ^ rv}
+
 	case ast.OP_EQ:
 		return object.NewBoolean(lv == rv)
 	case ast.OP_NEQ:

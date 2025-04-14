@@ -6,7 +6,7 @@ import (
 )
 
 func TestLexerOperator(t *testing.T) {
-	input := "=+(){},;"
+	input := "=+(){},;&^|"
 	tokens := []tokenTestExp{
 		{token.ASSIGN, "="},
 		{token.PLUS, "+"},
@@ -16,6 +16,9 @@ func TestLexerOperator(t *testing.T) {
 		{token.RBRACE, "}"},
 		{token.COMMA, ","},
 		{token.SEMICOLON, ";"},
+		{token.B_AND, "&"},
+		{token.XOR, "^"},
+		{token.B_OR, "|"},
 		{token.EOF, ""},
 	}
 
@@ -28,6 +31,8 @@ func TestDigraphOperator(t *testing.T) {
 2 <= 2;
 2 >= 2;
 2 != 2;
+true && true;
+false || true;
 `
 	tokens := []tokenTestExp{
 		{token.INT, "2"},
@@ -48,6 +53,16 @@ func TestDigraphOperator(t *testing.T) {
 		{token.INT, "2"},
 		{token.NOT_EQ, "!="},
 		{token.INT, "2"},
+		{token.SEMICOLON, ";"},
+
+		{token.TRUE, "true"},
+		{token.AND, "&&"},
+		{token.TRUE, "true"},
+		{token.SEMICOLON, ";"},
+
+		{token.FALSE, "false"},
+		{token.OR, "||"},
+		{token.TRUE, "true"},
 		{token.SEMICOLON, ";"},
 	}
 
