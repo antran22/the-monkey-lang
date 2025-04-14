@@ -5,23 +5,27 @@ import (
 	"monkey/eval/object"
 )
 
-func Eval(node ast.Node) object.Object {
+func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 	// Statements
 	case *ast.Program:
-		return evalProgram(node.Statements)
+		return evalProgram(node.Statements, env)
 	case *ast.BlockStatement:
-		return evalBlockStatements(node.Statements)
+		return evalBlockStatements(node.Statements, env)
 	case *ast.ExpressionStatement:
-		return Eval(node.Expression)
+		return Eval(node.Expression, env)
 	case *ast.ReturnStatement:
-		val := Eval(node.Value)
+		val := Eval(node.Value, env)
 		if object.IsError(val) {
 			return val
 		}
 		return &object.ReturnValue{Value: val}
+	case *ast.LetStatement:
+		return evalLetStatement(node, env)
 
-		// Literals
+	// Literals
+	case *ast.Identifier:
+		return evalIdentifier(node, env)
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 	case *ast.BooleanLiteral:
@@ -32,62 +36,46 @@ func Eval(node ast.Node) object.Object {
 	// Expressions
 
 	case *ast.PrefixExpression:
-		rightVal := Eval(node.Right)
+		rightVal := Eval(node.Right, env)
 		if object.IsError(rightVal) {
 			return rightVal
 		}
 		return evalPrefixExpression(node.Operator, rightVal)
 	case *ast.InfixExpression:
-		left := Eval(node.Left)
+		left := Eval(node.Left, env)
 		if object.IsError(left) {
 			return left
 		}
 
-		right := Eval(node.Right)
+		right := Eval(node.Right, env)
 		if object.IsError(right) {
 			return right
 		}
 
 		return evalInfixExpression(left, node.Operator, right)
 
+	case *ast.FunctionExpression:
+		return evalFunctionExpression(node, env)
+
+	case *ast.CallExpression:
+		return evalFunctionCall(node, env)
+
 	// Control flows
 	case *ast.IfExpression:
-		return evalIfExpression(node)
+		return evalIfExpression(node, env)
 
 	default:
 		return object.NewErrorf("unable to evaluate expression (%T) %v", node, node)
 	}
 }
 
-func evalProgram(stmts []ast.Statement) object.Object {
-	var result object.Object
-
-	for _, stmt := range stmts {
-		result = Eval(stmt)
-		switch result := result.(type) {
-		case *object.ReturnValue:
-			return result.Value
-		case *object.Error:
-			return result
+func evalExpressions(exps []ast.Expression, env *object.Environment) (result []object.Object) {
+	for _, e := range exps {
+		evaluated := Eval(e, env)
+		if object.IsError(evaluated) {
+			return []object.Object{evaluated}
 		}
-	}
-	return result
-}
-
-func evalBlockStatements(stmts []ast.Statement) object.Object {
-	var result object.Object
-
-	for _, stmt := range stmts {
-		result = Eval(stmt)
-		if result == nil {
-			continue
-		}
-
-		t := result.Type()
-
-		if t == object.RETURN_OBJ || t == object.ERROR_OBJ {
-			return result
-		}
+		result = append(result, evaluated)
 	}
 	return result
 }
