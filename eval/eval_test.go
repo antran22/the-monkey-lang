@@ -34,3 +34,16 @@ func testBooleanObject(t *testing.T, obj object.Object, expected bool) {
 	r.Truef(ok, "obj is not *object.Boolean, got %T (%v)", obj, obj)
 	r.Equal(expected, result.Value)
 }
+
+func testNullObject(t *testing.T, obj object.Object) {
+	require.Equal(t, object.NULL, obj)
+}
+
+func testErrorObject(t *testing.T, obj object.Object, message string) {
+	r := require.New(t)
+	errObj, ok := obj.(*object.Error)
+
+	r.Truef(ok, "obj is not *object.Error, got %T (%v)", obj, obj)
+
+	r.Equal(message, errObj.Message)
+}

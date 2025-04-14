@@ -19,47 +19,44 @@ func evalPrefixExpression(operator ast.Operator, value object.Object) object.Obj
 }
 
 func evalPrefixBangOperator(value object.Object) object.Object {
-	truthy := value.Truthy()
+	truthy := value.IsTruthy()
 	return object.NewBoolean(!truthy)
 }
 
 func evalPrefixMinusOperator(value object.Object) object.Object {
-	switch value.Type() {
+	t := value.Type()
+
+	switch t {
 	case object.INTEGER_OBJ:
 		iv := value.(*object.Integer).Value
 		return &object.Integer{Value: -iv}
-	case object.BOOLEAN_OBJ:
-		if value == object.TRUE {
-			return &object.Integer{Value: -1}
-		}
-		return &object.Integer{Value: 0}
 	default:
-		return object.NULL
+		return object.NewErrorf("unsupported operation: - %s", t)
 	}
 }
 
 // infix expression
 
 func evalInfixExpression(left object.Object, operator ast.Operator, right object.Object) object.Object {
+	lt, rt := left.Type(), right.Type()
 	switch {
-	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
+	case lt == object.INTEGER_OBJ && rt == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(left.(*object.Integer), operator, right.(*object.Integer))
-	case left.Type() == object.BOOLEAN_OBJ && right.Type() == object.BOOLEAN_OBJ:
+	case lt == object.BOOLEAN_OBJ && rt == object.BOOLEAN_OBJ:
 		return evalBooleanInfixExpression(left.(*object.Boolean), operator, right.(*object.Boolean))
 	default:
-		return object.NULL
+		return object.NewErrorf("unsupported operation: %s %s %s", lt, operator, rt)
 	}
 }
 
 func evalBooleanInfixExpression(left *object.Boolean, operator ast.Operator, right *object.Boolean) object.Object {
-	lv, rv := left.Value, right.Value
 	switch operator {
 	case ast.OP_EQ:
-		return object.NewBoolean(lv == rv)
+		return object.NewBoolean(left == right)
 	case ast.OP_NEQ:
-		return object.NewBoolean(lv != rv)
+		return object.NewBoolean(left != right)
 	default:
-		return object.NULL
+		return object.NewErrorf("unsupported operation: BOOLEAN %s BOOLEAN", operator)
 	}
 }
 
@@ -87,6 +84,6 @@ func evalIntegerInfixExpression(left *object.Integer, operator ast.Operator, rig
 	case ast.OP_LE:
 		return object.NewBoolean(lv <= rv)
 	default:
-		return object.NULL
+		return object.NewErrorf("unsupported operation: INTEGER %s INTEGER", operator)
 	}
 }

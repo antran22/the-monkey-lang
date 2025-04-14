@@ -31,7 +31,7 @@ func TestEvalBooleanOperator(t *testing.T) {
 		{"true == true", true},
 		{"true == false", false},
 		{"true != false", true},
-		{"true != true,", false},
+		{"true != true", false},
 
 		// mixed
 		{"!(1 == 2)", true},

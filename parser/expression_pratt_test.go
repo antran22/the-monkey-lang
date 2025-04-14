@@ -78,6 +78,10 @@ func TestParsingPrecedence(t *testing.T) {
 		expected string
 	}{
 		{
+			"true != true",
+			"(true != true)",
+		},
+		{
 			"-a * b",
 			"((-a) * b)",
 		},
