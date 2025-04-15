@@ -25,7 +25,7 @@ func TestParsingPrefixExpressions(t *testing.T) {
 
 			r.Len(program.Statements, 1)
 
-			stmt := testExpression(t, program.Statements[0])
+			stmt := testExpressionStatement(t, program.Statements[0])
 
 			exp, ok := stmt.Expression.(*ast.PrefixExpression)
 			r.True(ok, "exp is not *ast.PrefixExpression. got=%T", stmt.Expression)
@@ -70,7 +70,7 @@ func TestParsingInfixExpressions(t *testing.T) {
 
 			r.Len(program.Statements, 1)
 
-			stmt := testExpression(t, program.Statements[0])
+			stmt := testExpressionStatement(t, program.Statements[0])
 
 			testInfixExpression(pt, stmt.Expression, tt.leftValue, ast.Operator(tt.operator), tt.rightValue)
 		})
@@ -185,6 +185,14 @@ func TestParsingPrecedence(t *testing.T) {
 		{
 			"add(a + b + c * d / f + g)",
 			"add((((a + b) + ((c * d) / f)) + g))",
+		},
+		{
+			"a * [1, 2, 3, 4][b * c] * d",
+			"((a * ([1, 2, 3, 4][(b * c)])) * d)",
+		},
+		{
+			"add(a * b[2], b[1], 2 * [1, 2][1])",
+			"add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))",
 		},
 	}
 

@@ -14,7 +14,7 @@ func TestIfExpression(t *testing.T) {
 
 	program := makeProgram(input, t)
 	r.Len(program.Statements, 1)
-	stmt := testExpression(t, program.Statements[0])
+	stmt := testExpressionStatement(t, program.Statements[0])
 
 	exp, ok := stmt.Expression.(*ast.IfExpression)
 	r.True(ok, "exp is not *ast.IfExpression")
@@ -23,7 +23,7 @@ func TestIfExpression(t *testing.T) {
 
 	r.NotNil(exp.ThenBranch)
 	r.Len(exp.ThenBranch.Statements, 1)
-	stmtExp := testExpression(t, exp.ThenBranch.Statements[0])
+	stmtExp := testExpressionStatement(t, exp.ThenBranch.Statements[0])
 	testIdentifier(t, stmtExp.Expression, "x")
 
 	r.Nil(exp.ElseBranch)
@@ -36,7 +36,7 @@ func TestIfElseExpression(t *testing.T) {
 
 	program := makeProgram(input, t)
 	r.Len(program.Statements, 1)
-	stmt := testExpression(t, program.Statements[0])
+	stmt := testExpressionStatement(t, program.Statements[0])
 
 	exp, ok := stmt.Expression.(*ast.IfExpression)
 	r.True(ok, "exp is not *ast.IfExpression")
@@ -45,11 +45,11 @@ func TestIfElseExpression(t *testing.T) {
 
 	r.NotNil(exp.ThenBranch)
 	r.Len(exp.ThenBranch.Statements, 1)
-	thenStmtExp := testExpression(t, exp.ThenBranch.Statements[0])
+	thenStmtExp := testExpressionStatement(t, exp.ThenBranch.Statements[0])
 	testIdentifier(t, thenStmtExp.Expression, "x")
 
 	r.NotNil(exp.ElseBranch)
 	r.Len(exp.ElseBranch.Statements, 1)
-	elseStmtExp := testExpression(t, exp.ElseBranch.Statements[0])
+	elseStmtExp := testExpressionStatement(t, exp.ElseBranch.Statements[0])
 	testIdentifier(t, elseStmtExp.Expression, "y")
 }

@@ -8,6 +8,7 @@ import (
 
 type FunctionExpression struct {
 	Token      token.Token
+	Name       string
 	Parameters []*Identifier
 	Body       *BlockStatement
 }
@@ -23,6 +24,9 @@ func (f *FunctionExpression) String() string {
 	}
 
 	out.WriteString(f.TokenLiteral())
+	if len(f.Name) > 0 {
+		out.WriteString(f.Name)
+	}
 	out.WriteString("(")
 	out.WriteString(strings.Join(params, ", "))
 	out.WriteString(") ")
@@ -35,7 +39,12 @@ func (f *FunctionExpression) TokenLiteral() string {
 	return f.Token.Literal
 }
 
-func (f *FunctionExpression) expressionNode() {}
+func (f *FunctionExpression) DisplayName() string {
+	if len(f.Name) > 0 {
+		return f.Name
+	}
+	return "anonymous function"
+}
 
 // function call expression
 
@@ -64,7 +73,5 @@ func (c *CallExpression) String() string {
 func (c *CallExpression) TokenLiteral() string {
 	return c.Token.Literal
 }
-
-func (c *CallExpression) expressionNode() {}
 
 var _ Expression = (*CallExpression)(nil)

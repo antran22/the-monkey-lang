@@ -64,6 +64,28 @@ applyFn(multiply, 5, 2);
 	}
 }
 
+func TestFunctionError(t *testing.T) {
+	tests := []struct {
+		input           string
+		expectedMessage string
+	}{
+		{
+			`let x = fn(a, b, c) {
+        return a + b + c;
+      }
+      x(5, 4)`,
+			"wrong number of argument for `anonymous function`, expected 3, got 2",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(fmt.Sprintf("function call error %s", tc.input), func(t *testing.T) {
+			evaluated := evalProgram(tc.input)
+			testErrorObject(t, evaluated, tc.expectedMessage)
+		})
+	}
+}
+
 func TestBuiltinLen(t *testing.T) {
 	tests := []struct {
 		input    string
@@ -73,7 +95,10 @@ func TestBuiltinLen(t *testing.T) {
 		{`len("hello")`, 5},
 		{`len("hello world")`, 11},
 		{`len("hello", "hi")`, "wrong number of argument for `len`, expected 1, got 2"},
-		{`len(1)`, "unsupported argument type for `len`: INTEGER"},
+		{`len(1)`, "wrong value type for argument #0 for `len`, expected STRING | ARRAY, got INTEGER"},
+		{`len(false)`, "wrong value type for argument #0 for `len`, expected STRING | ARRAY, got BOOLEAN"},
+		{`len([])`, 0},
+		{`len([1, 2, "hello"])`, 3},
 	}
 
 	for _, tc := range tests {

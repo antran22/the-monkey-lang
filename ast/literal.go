@@ -10,7 +10,6 @@ type IntegerLiteral struct {
 
 var _ Expression = (*IntegerLiteral)(nil)
 
-func (i *IntegerLiteral) expressionNode()      {}
 func (i *IntegerLiteral) TokenLiteral() string { return i.Token.Literal }
 func (i *IntegerLiteral) String() string       { return i.Token.Literal }
 
@@ -23,7 +22,6 @@ type BooleanLiteral struct {
 
 var _ Expression = (*BooleanLiteral)(nil)
 
-func (i *BooleanLiteral) expressionNode()      {}
 func (i *BooleanLiteral) TokenLiteral() string { return i.Token.Literal }
 func (i *BooleanLiteral) String() string       { return i.Token.Literal }
 
@@ -36,7 +34,6 @@ type StringLiteral struct {
 
 var _ Expression = (*StringLiteral)(nil)
 
-func (i *StringLiteral) expressionNode()      {}
 func (i *StringLiteral) TokenLiteral() string { return i.Token.Literal }
 func (i *StringLiteral) String() string       { return i.Token.Literal }
 
@@ -48,7 +45,6 @@ type NullLiteral struct {
 
 var _ Expression = (*NullLiteral)(nil)
 
-func (n *NullLiteral) expressionNode() {}
 func (n *NullLiteral) String() string {
 	return "null"
 }

@@ -7,7 +7,6 @@ import (
 
 type Expression interface {
 	Node
-	expressionNode()
 }
 
 // Expression Statement
@@ -52,8 +51,6 @@ func (p *PrefixExpression) TokenLiteral() string {
 	return p.Token.Literal
 }
 
-func (p *PrefixExpression) expressionNode() {}
-
 var _ Expression = (*PrefixExpression)(nil)
 
 // Infix Expression
@@ -80,7 +77,5 @@ func (i *InfixExpression) String() string {
 func (i *InfixExpression) TokenLiteral() string {
 	return i.Token.Literal
 }
-
-func (i *InfixExpression) expressionNode() {}
 
 var _ Expression = (*InfixExpression)(nil)

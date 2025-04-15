@@ -6,7 +6,7 @@ import (
 )
 
 func TestLexerOperator(t *testing.T) {
-	input := "=+(){},;&^|"
+	input := "=+(){}[],;&^|"
 	tokens := []tokenTestExp{
 		{token.ASSIGN, "="},
 		{token.PLUS, "+"},
@@ -14,6 +14,8 @@ func TestLexerOperator(t *testing.T) {
 		{token.RPAREN, ")"},
 		{token.LBRACE, "{"},
 		{token.RBRACE, "}"},
+		{token.LBRACKET, "["},
+		{token.RBRACKET, "]"},
 		{token.COMMA, ","},
 		{token.SEMICOLON, ";"},
 		{token.B_AND, "&"},

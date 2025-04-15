@@ -34,6 +34,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.String{Value: node.Value}
 	case *ast.NullLiteral:
 		return object.NULL
+	case *ast.ArrayLiteral:
+		return evalArrayLiteral(node, env)
 
 	// Expressions
 
@@ -62,12 +64,15 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.CallExpression:
 		return evalFunctionCall(node, env)
 
+	case *ast.IndexExpression:
+		return evalIndexingOperator(node, env)
+
 	// Control flows
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
 
 	default:
-		return object.NewErrorf("unable to evaluate expression (%T) %v", node, node)
+		return object.InvalidExpressionError(node)
 	}
 }
 

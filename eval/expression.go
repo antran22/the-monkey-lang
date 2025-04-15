@@ -31,7 +31,7 @@ func evalPrefixMinusOperator(value object.Object) object.Object {
 		iv := value.(*object.Integer).Value
 		return &object.Integer{Value: -iv}
 	default:
-		return object.NewErrorf("unsupported operation: - %s", t)
+		return object.UnknownPrefixOpError("-", value)
 	}
 }
 
@@ -47,7 +47,7 @@ func evalInfixExpression(left object.Object, operator ast.Operator, right object
 	case lt == object.STRING_OBJ && rt == object.STRING_OBJ:
 		return evalStringInfixExpression(left.(*object.String), operator, right.(*object.String))
 	default:
-		return object.NewErrorf("unsupported operation: %s %s %s", lt, operator, rt)
+		return object.UnknownInfixOpError(left, string(operator), right)
 	}
 }
 
@@ -60,7 +60,7 @@ func evalStringInfixExpression(left *object.String, operator ast.Operator, right
 	case ast.OP_PLUS:
 		return &object.String{Value: left.Value + right.Value}
 	default:
-		return object.NewErrorf("unsupported operation: STRING %s STRING", operator)
+		return object.UnknownInfixOpError(left, string(operator), right)
 	}
 }
 
@@ -75,7 +75,7 @@ func evalBooleanInfixExpression(left *object.Boolean, operator ast.Operator, rig
 	case ast.OP_OR:
 		return object.NewBoolean(left.Value || right.Value)
 	default:
-		return object.NewErrorf("unsupported operation: BOOLEAN %s BOOLEAN", operator)
+		return object.UnknownInfixOpError(left, string(operator), right)
 	}
 }
 
@@ -110,6 +110,6 @@ func evalIntegerInfixExpression(left *object.Integer, operator ast.Operator, rig
 	case ast.OP_LE:
 		return object.NewBoolean(lv <= rv)
 	default:
-		return object.NewErrorf("unsupported operation: INTEGER %s INTEGER", operator)
+		return object.UnknownInfixOpError(left, string(operator), right)
 	}
 }

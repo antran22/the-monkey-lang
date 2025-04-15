@@ -31,7 +31,7 @@ func checkParserErrors(t *testing.T, p *parser.Parser) {
 	t.FailNow()
 }
 
-func testExpression(t *testing.T, s ast.Statement) *ast.ExpressionStatement {
+func testExpressionStatement(t *testing.T, s ast.Statement) *ast.ExpressionStatement {
 	stmt, ok := s.(*ast.ExpressionStatement)
 	require.True(t, ok, "not ast.ExpressionStatement. got=%T", s)
 	return stmt

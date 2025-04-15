@@ -12,6 +12,12 @@ func (p *Parser) parseFunctionExpression() ast.Expression {
 		Token: p.curToken,
 	}
 
+	if p.peekTokenIs(token.IDENT) {
+		p.nextToken()
+		// named function
+		exp.Name = p.curToken.Literal
+	}
+
 	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
@@ -66,32 +72,7 @@ func (p *Parser) parseCallExpression(fn ast.Expression) ast.Expression {
 		Function: fn,
 	}
 
-	exp.Arguments = p.parseCallArguments()
+	exp.Arguments = p.parseExpressionList(token.RPAREN)
 
 	return exp
-}
-
-func (p *Parser) parseCallArguments() []ast.Expression {
-	args := []ast.Expression{}
-
-	if p.peekTokenIs(token.RPAREN) {
-		p.nextToken()
-		return args
-	}
-
-	p.nextToken()
-
-	args = append(args, p.parseExpression(LOWEST))
-
-	for p.peekTokenIs(token.COMMA) {
-		p.nextToken()
-		p.nextToken()
-		args = append(args, p.parseExpression(LOWEST))
-	}
-
-	if !p.expectPeek(token.RPAREN) {
-		return nil
-	}
-
-	return args
 }

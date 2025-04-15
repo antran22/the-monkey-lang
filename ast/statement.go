@@ -7,7 +7,6 @@ import (
 
 type Statement interface {
 	Node
-	statementNode()
 }
 
 // LetStatement
@@ -37,8 +36,6 @@ func (ls *LetStatement) String() string {
 	return out.String()
 }
 
-func (ls *LetStatement) statementNode() {}
-
 func (ls *LetStatement) TokenLiteral() string {
 	return ls.Token.Literal
 }
@@ -66,8 +63,6 @@ func (rs *ReturnStatement) String() string {
 
 	return out.String()
 }
-
-func (rs *ReturnStatement) statementNode() {}
 
 func (rs *ReturnStatement) TokenLiteral() string {
 	return rs.Token.Literal
@@ -99,5 +94,3 @@ func (b *BlockStatement) String() string {
 func (b *BlockStatement) TokenLiteral() string {
 	return b.Token.Literal
 }
-
-func (b *BlockStatement) statementNode() {}

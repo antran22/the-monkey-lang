@@ -4,6 +4,14 @@ import (
 	"monkey/ast"
 )
 
+// Callable
+
+type Callable interface {
+	Object
+	DisplayName() string
+}
+
+// Function
 const FUNCTION_OBJ = "FUNCTION"
 
 type Function struct {
@@ -11,7 +19,7 @@ type Function struct {
 	Env      *Environment
 }
 
-var _ Object = (*Function)(nil)
+var _ Callable = (*Function)(nil)
 
 func (f *Function) Inspect() string {
 	return f.FuncNode.String()
@@ -25,6 +33,12 @@ func (f *Function) Type() ObjectType {
 	return FUNCTION_OBJ
 }
 
+func (f *Function) DisplayName() string {
+	return f.FuncNode.DisplayName()
+}
+
+// Builtin
+
 const BUILTIN_OBJ = "BUILTIN"
 
 type (
@@ -34,6 +48,8 @@ type (
 		Name string
 	}
 )
+
+var _ Callable = (*Builtin)(nil)
 
 func NewBuiltin(name string, fn BuiltinFunc) *Builtin {
 	return &Builtin{
@@ -54,4 +70,6 @@ func (b *Builtin) Type() ObjectType {
 	return BUILTIN_OBJ
 }
 
-var _ Object = (*Builtin)(nil)
+func (b *Builtin) DisplayName() string {
+	return b.Name
+}

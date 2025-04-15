@@ -5,8 +5,65 @@ import (
 	"monkey/token"
 )
 
-// parse expression
+type precedenceLevel int
 
+const (
+	_ precedenceLevel = iota
+	LOWEST
+	AND_OR       // && , ||
+	EQUALS       // ==
+	LESS_GREATER // > or <
+	SUM          // +
+	PRODUCT      // *
+	BITWISE      // ^, &, |
+	PREFIX       // -X or !X
+	CALL         // myFunction(X)
+	INDEX        // array[1]
+)
+
+var tokenPrecendence = map[token.TokenType]precedenceLevel{
+	token.EQ:     EQUALS,
+	token.NOT_EQ: EQUALS,
+
+	token.LT: LESS_GREATER,
+	token.GT: LESS_GREATER,
+	token.LE: LESS_GREATER,
+	token.GE: LESS_GREATER,
+
+	token.AND: AND_OR,
+	token.OR:  AND_OR,
+
+	token.PLUS:  SUM,
+	token.MINUS: SUM,
+
+	token.SLASH:    PRODUCT,
+	token.ASTERISK: PRODUCT,
+
+	token.B_AND: BITWISE,
+	token.B_OR:  BITWISE,
+	token.XOR:   BITWISE,
+
+	token.LPAREN:   CALL,
+	token.LBRACKET: INDEX,
+}
+
+// check token precedence
+
+func (p *Parser) peekPrecedence() precedenceLevel {
+	if p, ok := tokenPrecendence[p.peekToken.Type]; ok {
+		return p
+	}
+	return LOWEST
+}
+
+func (p *Parser) curPrecedence() precedenceLevel {
+	if p, ok := tokenPrecendence[p.curToken.Type]; ok {
+		return p
+	}
+	return LOWEST
+}
+
+// register token type parser
 func (p *Parser) registerTokenTypeParser() {
 	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
@@ -20,6 +77,7 @@ func (p *Parser) registerTokenTypeParser() {
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 	p.registerPrefix(token.IF, p.parseIfExpression)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionExpression)
+	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 
@@ -43,7 +101,10 @@ func (p *Parser) registerTokenTypeParser() {
 	p.registerInfix(token.OR, p.parseInfixExpression)
 
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
+	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 }
+
+// parser hook
 
 func (p *Parser) parseExpression(precedence precedenceLevel) ast.Expression {
 	prefix, ok := p.prefixParseFns[p.curToken.Type]

@@ -32,6 +32,4 @@ func (i *IfExpression) TokenLiteral() string {
 	return i.Token.Literal
 }
 
-func (i *IfExpression) expressionNode() {}
-
 var _ Expression = (*IfExpression)(nil)

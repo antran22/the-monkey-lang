@@ -20,7 +20,7 @@ func evalProgram(input string) object.Object {
 	return eval.Eval(program, env)
 }
 
-func testLiteralObject(t *testing.T, obj object.Object, expected any) {
+func testObject(t *testing.T, obj object.Object, expected any) {
 	switch expected := expected.(type) {
 	case int:
 		testIntegerObject(t, obj, expected)
@@ -69,4 +69,12 @@ func testErrorObject(t *testing.T, obj object.Object, message string) {
 	r.Truef(ok, "obj is not *object.Error, got %T (%v)", obj, obj)
 
 	r.Equal(message, errObj.Message)
+}
+
+func assertIsArrayObject(t *testing.T, obj object.Object) *object.Array {
+	result, ok := obj.(*object.Array)
+
+	require.Truef(t, ok, "obj is not *object.Array, got %T (%v)", obj, obj)
+
+	return result
 }

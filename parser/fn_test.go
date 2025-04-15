@@ -1,6 +1,7 @@
 package parser_test
 
 import (
+	"fmt"
 	"monkey/ast"
 	"testing"
 
@@ -8,30 +9,33 @@ import (
 )
 
 func TestFunctionExpression(t *testing.T) {
-	r := require.New(t)
+	inputs := []string{`fn(a, b) { a + b; }`, `fn add(a, b) {a + b;}`}
 
-	input := `fn(a, b) { a + b; }`
+	for i, input := range inputs {
+		t.Run(fmt.Sprintf("test function expression %d", i), func(t *testing.T) {
+			r := require.New(t)
+			program := makeProgram(input, t)
+			r.Len(program.Statements, 1)
+			stmt := testExpressionStatement(t, program.Statements[0])
 
-	program := makeProgram(input, t)
-	r.Len(program.Statements, 1)
-	stmt := testExpression(t, program.Statements[0])
+			exp, ok := stmt.Expression.(*ast.FunctionExpression)
+			r.True(ok, "exp is not *ast.FunctionExpression")
 
-	exp, ok := stmt.Expression.(*ast.FunctionExpression)
-	r.True(ok, "exp is not *ast.FunctionExpression")
+			r.Equal("fn", exp.TokenLiteral())
 
-	r.Equal("fn", exp.TokenLiteral())
+			r.Len(exp.Parameters, 2)
+			testIdentifier(t, exp.Parameters[0], "a")
+			testIdentifier(t, exp.Parameters[1], "b")
 
-	r.Len(exp.Parameters, 2)
-	testIdentifier(t, exp.Parameters[0], "a")
-	testIdentifier(t, exp.Parameters[1], "b")
+			r.NotNil(exp.Body)
+			r.Len(exp.Body.Statements, 1)
 
-	r.NotNil(exp.Body)
-	r.Len(exp.Body.Statements, 1)
+			expStmt, ok := exp.Body.Statements[0].(*ast.ExpressionStatement)
+			r.True(ok, "inner exp is not *ast.ExpressionStatement")
 
-	expStmt, ok := exp.Body.Statements[0].(*ast.ExpressionStatement)
-	r.True(ok, "inner exp is not *ast.ExpressionStatement")
-
-	testInfixExpression(t, expStmt.Expression, "a", ast.OP_PLUS, "b")
+			testInfixExpression(t, expStmt.Expression, "a", ast.OP_PLUS, "b")
+		})
+	}
 }
 
 func TestFunctionParameterParsing(t *testing.T) {
@@ -49,7 +53,7 @@ func TestFunctionParameterParsing(t *testing.T) {
 		program := makeProgram(tc.input, t)
 
 		r.Len(program.Statements, 1)
-		stmt := testExpression(t, program.Statements[0])
+		stmt := testExpressionStatement(t, program.Statements[0])
 
 		exp, ok := stmt.Expression.(*ast.FunctionExpression)
 		r.True(ok, "exp is not *ast.FunctionExpression")
@@ -70,7 +74,7 @@ func TestFunctionCallExpression(t *testing.T) {
 
 	program := makeProgram(input, t)
 	r.Len(program.Statements, 1)
-	stmt := testExpression(t, program.Statements[0])
+	stmt := testExpressionStatement(t, program.Statements[0])
 
 	exp, ok := stmt.Expression.(*ast.CallExpression)
 	r.True(ok, "exp is not *ast.CallExpression")
