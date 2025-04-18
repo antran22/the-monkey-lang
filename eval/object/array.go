@@ -32,3 +32,30 @@ func (a *Array) IsTruthy() bool {
 func (a *Array) Type() ObjectType {
 	return ARRAY_OBJ
 }
+
+func (a *Array) Index(i int) Object {
+	if i < 0 || i >= len(a.Elements) {
+		return ArrayOutOfBoundError(i)
+	}
+	return a.Elements[i]
+}
+
+func (a *Array) Slice(start, end int) Object {
+	n := len(a.Elements)
+
+	if start < 0 || start > n {
+		return ArrayOutOfBoundError(start)
+	}
+
+	if end < 0 || end > n {
+		return ArrayOutOfBoundError(start)
+	}
+
+	if start > end+1 {
+		return NewErrorf("cannot take slice from %d to %d", start, end)
+	}
+
+	return &Array{
+		Elements: a.Elements[start:end],
+	}
+}

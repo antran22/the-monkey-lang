@@ -35,7 +35,7 @@ type StringLiteral struct {
 var _ Expression = (*StringLiteral)(nil)
 
 func (i *StringLiteral) TokenLiteral() string { return i.Token.Literal }
-func (i *StringLiteral) String() string       { return i.Token.Literal }
+func (i *StringLiteral) String() string       { return `"` + i.Token.Literal + `"` }
 
 // Null literal
 

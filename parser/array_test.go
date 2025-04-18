@@ -27,6 +27,22 @@ func TestParsingArrayLiterals(t *testing.T) {
 	testInfixExpression(t, array.Elements[2], 3, "+", 3)
 }
 
+func TestParsingEmptyArrayLiteral(t *testing.T) {
+	r := require.New(t)
+
+	input := "[]"
+
+	program := makeProgram(input, t)
+
+	stmt := testExpressionStatement(t, program.Statements[0])
+
+	array, ok := stmt.Expression.(*ast.ArrayLiteral)
+
+	r.Truef(ok, "stmt.Expression is not *ast.ArrayLiteral, got %T (%v)", stmt.Expression, stmt.Expression)
+
+	r.Len(array.Elements, 0)
+}
+
 func TestParsingIndexingOperator(t *testing.T) {
 	r := require.New(t)
 	input := "[1, 2, 3][1]"

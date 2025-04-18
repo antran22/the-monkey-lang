@@ -1,15 +1,11 @@
 package eval_test
 
 import (
-	"fmt"
 	"testing"
 )
 
 func TestEvalBooleanOperator(t *testing.T) {
-	testCases := []struct {
-		input    string
-		expected bool
-	}{
+	testCases := []happyTestCase{
 		{"true", true},
 		{"false", false},
 		// prefix expression
@@ -48,19 +44,11 @@ func TestEvalBooleanOperator(t *testing.T) {
 		{"!(1 == 2)", true},
 	}
 
-	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("eval bool %s", tc.input), func(st *testing.T) {
-			evaluated := evalProgram(tc.input)
-			testBooleanObject(t, evaluated, tc.expected)
-		})
-	}
+	testExpressionEvaluation(t, testCases, []errorTestCase{})
 }
 
 func TestEvalIntegerExpression(t *testing.T) {
-	testCases := []struct {
-		input    string
-		expected int
-	}{
+	testCases := []happyTestCase{
 		{"5", 5},
 		{"10", 10},
 		// prefix expression
@@ -83,27 +71,14 @@ func TestEvalIntegerExpression(t *testing.T) {
 		{"1 ^ 1", 0},
 	}
 
-	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("eval int %d", tc.expected), func(t *testing.T) {
-			evaluated := evalProgram(tc.input)
-			testIntegerObject(t, evaluated, tc.expected)
-		})
-	}
+	testExpressionEvaluation(t, testCases, []errorTestCase{})
 }
 
 func TestEvalStringExpression(t *testing.T) {
-	testCases := []struct {
-		input    string
-		expected string
-	}{
+	testCases := []happyTestCase{
 		{`"hello"`, "hello"},
 		{`"hello" + "hi"`, "hellohi"},
 	}
 
-	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("eval string %s", tc.expected), func(t *testing.T) {
-			evaluated := evalProgram(tc.input)
-			testStringObject(t, evaluated, tc.expected)
-		})
-	}
+	testExpressionEvaluation(t, testCases, []errorTestCase{})
 }

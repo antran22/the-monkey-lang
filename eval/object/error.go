@@ -57,12 +57,12 @@ func ArrayOutOfBoundError(idx int) *Error {
 }
 
 // function error format
-func FuncArgCountMismatch(name string, expectedCount, argCount int) *Error {
-	return NewErrorf("wrong number of argument for `%s`, expected %d, got %d", name, expectedCount, argCount)
+func FuncNotEnoughArg(name string, expectedCount, argCount int) *Error {
+	return NewErrorf("too few argument for `%s`, expected at least %d, got %d", name, expectedCount, argCount)
 }
 
-func NotACallable(node ast.Node) *Error {
-	return NewErrorf("%s is not a callable, type: %T", node.String(), node)
+func NotACallable(obj Object) *Error {
+	return NewErrorf("not a callable: %s", obj.Inspect())
 }
 
 func FuncArgTypeMismatch(name string, argNum int, expectedType string, actualType string) *Error {

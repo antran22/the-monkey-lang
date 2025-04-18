@@ -25,7 +25,7 @@ func (f *FunctionExpression) String() string {
 
 	out.WriteString(f.TokenLiteral())
 	if len(f.Name) > 0 {
-		out.WriteString(f.Name)
+		out.WriteString(" " + f.Name + " ")
 	}
 	out.WriteString("(")
 	out.WriteString(strings.Join(params, ", "))

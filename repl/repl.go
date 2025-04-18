@@ -8,15 +8,23 @@ import (
 	"monkey/eval/object"
 	"monkey/lexer"
 	"monkey/parser"
+	"os/user"
 )
 
 const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer) {
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
 	scanner := bufio.NewScanner(in)
 
 	env := object.NewEnvironment()
 
+	fmt.Fprintf(out, "Hello %s! This is the Monkey programming language!\n", user.Username)
+	fmt.Fprintf(out, "Type in some commands please\n")
 	for {
 		fmt.Fprint(out, PROMPT)
 

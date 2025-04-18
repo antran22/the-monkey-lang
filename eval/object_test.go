@@ -8,7 +8,7 @@ import (
 func TestArrayLiteral(t *testing.T) {
 	input := `[1, true, "hello", 3 + 4]`
 
-	evaluated := evalProgram(input)
+	evaluated := evalProgram(t, input)
 
 	array := assertIsArrayObject(t, evaluated)
 
@@ -39,7 +39,7 @@ func TestIndexingOperator(t *testing.T) {
 	for i, exp := range expectedOutput {
 		input := fmt.Sprintf("%s[%s]", array, i)
 		t.Run(fmt.Sprintf("array[%s]", i), func(t *testing.T) {
-			evaluated := evalProgram(input)
+			evaluated := evalProgram(t, input)
 			testObject(t, evaluated, exp)
 		})
 	}
@@ -47,7 +47,7 @@ func TestIndexingOperator(t *testing.T) {
 	for i, exp := range expectedError {
 		input := fmt.Sprintf("%s[%s]", array, i)
 		t.Run(fmt.Sprintf("array[%s]", i), func(t *testing.T) {
-			evaluated := evalProgram(input)
+			evaluated := evalProgram(t, input)
 			testErrorObject(t, evaluated, exp)
 		})
 	}

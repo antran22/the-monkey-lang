@@ -1,7 +1,6 @@
 package eval_test
 
 import (
-	"fmt"
 	"monkey/eval/object"
 	"testing"
 
@@ -12,7 +11,7 @@ func TestFunctionObject(t *testing.T) {
 	r := require.New(t)
 
 	input := "fn(x) {x + 2}"
-	evaluated := evalProgram(input)
+	evaluated := evalProgram(t, input)
 
 	fn, ok := evaluated.(*object.Function)
 	r.Truef(ok, "fn is not *object.Function, got %T (%v)", evaluated, evaluated)
@@ -25,10 +24,7 @@ func TestFunctionObject(t *testing.T) {
 }
 
 func TestFunctionCall(t *testing.T) {
-	tests := []struct {
-		input    string
-		expected int
-	}{
+	happyCases := []happyTestCase{
 		{"let identity = fn(x) { x; }; identity(5);", 5},
 		{"let identity = fn(x) { return x; }; identity(5);", 5},
 		{"let double = fn(x) { x * 2; }; double(5);", 10},
@@ -54,66 +50,32 @@ let multiply = fn(x, y) {
 }
 applyFn(multiply, 5, 2);
 `, 10},
+
+		{
+			`let x = fn(a, b, c) {
+        return a + b + c;
+      }
+      x(5, 4, 6, 7)`,
+			15,
+		},
 	}
 
-	for _, tc := range tests {
-		t.Run(fmt.Sprintf("function call %s", tc.input), func(t *testing.T) {
-			evaluated := evalProgram(tc.input)
-			testIntegerObject(t, evaluated, tc.expected)
-		})
-	}
-}
-
-func TestFunctionError(t *testing.T) {
-	tests := []struct {
-		input           string
-		expectedMessage string
-	}{
+	errorCases := []errorTestCase{
 		{
 			`let x = fn(a, b, c) {
         return a + b + c;
       }
       x(5, 4)`,
-			"wrong number of argument for `anonymous function`, expected 3, got 2",
+			"too few argument for `anonymous function`, expected at least 3, got 2",
+		},
+		{
+			`fn hello(a, b, c) {
+        return a + b + c;
+      }
+      hello(5, 4)`,
+			"too few argument for `hello`, expected at least 3, got 2",
 		},
 	}
 
-	for _, tc := range tests {
-		t.Run(fmt.Sprintf("function call error %s", tc.input), func(t *testing.T) {
-			evaluated := evalProgram(tc.input)
-			testErrorObject(t, evaluated, tc.expectedMessage)
-		})
-	}
-}
-
-func TestBuiltinLen(t *testing.T) {
-	tests := []struct {
-		input    string
-		expected any
-	}{
-		{`len()`, "wrong number of argument for `len`, expected 1, got 0"},
-		{`len("hello")`, 5},
-		{`len("hello world")`, 11},
-		{`len("hello", "hi")`, "wrong number of argument for `len`, expected 1, got 2"},
-		{`len(1)`, "wrong value type for argument #0 for `len`, expected STRING | ARRAY, got INTEGER"},
-		{`len(false)`, "wrong value type for argument #0 for `len`, expected STRING | ARRAY, got BOOLEAN"},
-		{`len([])`, 0},
-		{`len([1, 2, "hello"])`, 3},
-	}
-
-	for _, tc := range tests {
-		t.Run(fmt.Sprintf("function call %s", tc.input), func(t *testing.T) {
-			r := require.New(t)
-
-			evaluated := evalProgram(tc.input)
-			switch expected := tc.expected.(type) {
-			case int:
-				testIntegerObject(t, evaluated, expected)
-			case string:
-				errObj, ok := evaluated.(*object.Error)
-				r.Truef(ok, "evaluated is not a *object.Error, got %T (%v)", evaluated, evaluated)
-				r.Equal(expected, errObj.Message)
-			}
-		})
-	}
+	testExpressionEvaluation(t, happyCases, errorCases)
 }

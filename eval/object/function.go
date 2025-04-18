@@ -6,11 +6,6 @@ import (
 
 // Callable
 
-type Callable interface {
-	Object
-	DisplayName() string
-}
-
 // Function
 const FUNCTION_OBJ = "FUNCTION"
 
@@ -19,7 +14,7 @@ type Function struct {
 	Env      *Environment
 }
 
-var _ Callable = (*Function)(nil)
+var _ Object = (*Function)(nil)
 
 func (f *Function) Inspect() string {
 	return f.FuncNode.String()
@@ -49,7 +44,7 @@ type (
 	}
 )
 
-var _ Callable = (*Builtin)(nil)
+var _ Object = (*Builtin)(nil)
 
 func NewBuiltin(name string, fn BuiltinFunc) *Builtin {
 	return &Builtin{
@@ -59,7 +54,7 @@ func NewBuiltin(name string, fn BuiltinFunc) *Builtin {
 }
 
 func (b *Builtin) Inspect() string {
-	return b.Name
+	return "builtin `" + b.Name + "`"
 }
 
 func (b *Builtin) IsTruthy() bool {

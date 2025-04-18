@@ -18,7 +18,7 @@ type String struct {
 var _ Object = (*String)(nil)
 
 func (s *String) Inspect() string {
-	return s.Value
+	return `"` + s.Value + `"`
 }
 
 func (s *String) Type() ObjectType {
@@ -29,10 +29,43 @@ func (s *String) IsTruthy() bool {
 	return len(s.Value) > 0
 }
 
+func (a *String) Index(i int) Object {
+	if i < 0 || i >= len(a.Value) {
+		return ArrayOutOfBoundError(i)
+	}
+	return &String{Value: string(a.Value[i])}
+}
+
+func (a *String) Slice(start, end int) Object {
+	n := len(a.Value)
+
+	if start < 0 || start > n {
+		return ArrayOutOfBoundError(start)
+	}
+
+	if end < 0 || end > n {
+		return ArrayOutOfBoundError(start)
+	}
+
+	if start > end+1 {
+		return NewErrorf("cannot take slice from %d to %d", start, end)
+	}
+
+	return &String{
+		Value: a.Value[start:end],
+	}
+}
+
 // Integer
 
 type Integer struct {
 	Value int
+}
+
+func NewInt(value int) *Integer {
+	return &Integer{
+		Value: value,
+	}
 }
 
 var _ Object = (*Integer)(nil)
