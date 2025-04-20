@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+// Array
+
 func TestArrayLiteral(t *testing.T) {
 	input := `[1, true, "hello", 3 + 4]`
 
@@ -18,7 +20,7 @@ func TestArrayLiteral(t *testing.T) {
 	testObject(t, array.Elements[3], 7)
 }
 
-func TestIndexingOperator(t *testing.T) {
+func TestArrayIndexingOperator(t *testing.T) {
 	array := `[1, true, "hello", 3 + 4]`
 
 	expectedOutput := map[string]any{
@@ -51,4 +53,81 @@ func TestIndexingOperator(t *testing.T) {
 			testErrorObject(t, evaluated, exp)
 		})
 	}
+}
+
+// Hash
+
+func TestHashLiterals(t *testing.T) {
+	happyCases := []happyTestCase{
+		{
+			`
+      let two = "two";
+      let hash = {
+        "one": 10 - 9,
+        two: 1 + 1,
+        "thr" + "ee": 6 / 2,
+        4: 4,
+        true: 5,
+        false: 6
+      }
+    `,
+			map[any]any{
+				"one":   1,
+				"two":   2,
+				"three": 3,
+				4:       4,
+				true:    5,
+				false:   6,
+			},
+		},
+	}
+
+	testExpressionEvaluation(t, happyCases, []errorTestCase{})
+}
+
+func TestHashIndexingOperator(t *testing.T) {
+	commonSetup := `
+      let two = "two";
+      let hash = {
+        "one": 10 - 9,
+        two: 1 + 1,
+        "thr" + "ee": 6 / 2,
+        4: 4,
+        true: 5,
+        false: 6
+      };
+  `
+
+	happyCases := []happyTestCase{
+		{
+			commonSetup + `hash["one"];`,
+			1,
+		},
+		{
+			commonSetup + `hash["two"];`,
+			2,
+		},
+		{
+			commonSetup + `hash["three"];`,
+			3,
+		},
+		{
+			commonSetup + `hash[4];`,
+			4,
+		},
+		{
+			commonSetup + `hash[true];`,
+			5,
+		},
+		{
+			commonSetup + `hash[false];`,
+			6,
+		},
+		{
+			commonSetup + `hash[5];`,
+			nil,
+		},
+	}
+
+	testExpressionEvaluation(t, happyCases, []errorTestCase{})
 }

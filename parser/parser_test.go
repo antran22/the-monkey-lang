@@ -37,6 +37,11 @@ func testExpressionStatement(t *testing.T, s ast.Statement) *ast.ExpressionState
 	return stmt
 }
 
+type expectedKVPair struct {
+	key   any
+	value any
+}
+
 func testLiteralExpression(t *testing.T, exp ast.Expression, expected any) {
 	if expected == nil {
 		testNullLiteral(t, exp)
@@ -57,8 +62,25 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected any) {
 		return
 	case []byte:
 		testStringLiteral(t, exp, string(v))
+	case []expectedKVPair:
+		testHashLiteral(t, exp, v)
 	default:
 		t.Fatalf("no test function for expected value %#v", expected)
+	}
+}
+
+func testHashLiteral(t *testing.T, exp ast.Expression, expectedPairs []expectedKVPair) {
+	r := require.New(t)
+
+	hash, ok := exp.(*ast.HashLiteral)
+	r.True(ok, "exp is not *ast.HashLiteral")
+
+	r.Equal(len(expectedPairs), len(hash.Pairs))
+
+	for idx, expectedPair := range expectedPairs {
+		pair := hash.Pairs[idx]
+		testLiteralExpression(t, pair.Key, expectedPair.key)
+		testLiteralExpression(t, pair.Value, expectedPair.value)
 	}
 }
 

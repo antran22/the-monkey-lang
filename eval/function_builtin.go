@@ -10,7 +10,6 @@ var builtins = map[string]*object.Builtin{}
 func addBuiltIn(name string, minArgCount int, fn object.BuiltinFunc) {
 	if minArgCount > 0 {
 		builtins[name] = object.NewBuiltin(name, func(args ...object.Object) object.Object {
-			fmt.Println(name, args)
 			if len(args) < minArgCount {
 				return object.FuncNotEnoughArg(name, minArgCount, len(args))
 			}

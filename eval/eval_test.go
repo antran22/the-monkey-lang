@@ -1,6 +1,8 @@
 package eval_test
 
 import (
+	"errors"
+	"fmt"
 	"monkey/eval"
 	"monkey/eval/object"
 	"monkey/lexer"
@@ -40,15 +42,15 @@ type errorTestCase struct {
 }
 
 func testExpressionEvaluation(t *testing.T, happyCases []happyTestCase, errorCases []errorTestCase) {
-	for _, tc := range happyCases {
-		t.Run(tc.input, func(t *testing.T) {
+	for i, tc := range happyCases {
+		t.Run(fmt.Sprintf("happy case #%d", i), func(t *testing.T) {
 			evaluated := evalProgram(t, tc.input)
 			testObject(t, evaluated, tc.expected)
 		})
 	}
 
-	for _, tc := range errorCases {
-		t.Run(tc.input, func(t *testing.T) {
+	for i, tc := range errorCases {
+		t.Run(fmt.Sprintf("error case #%d", i), func(t *testing.T) {
 			evaluated := evalProgram(t, tc.input)
 			testErrorObject(t, evaluated, tc.expectedMessage)
 		})
@@ -67,10 +69,25 @@ func testObject(t *testing.T, obj object.Object, expected any) {
 		testBooleanObject(t, obj, expected)
 	case []any:
 		testArrayObject(t, obj, expected)
-
+	case map[any]any:
+		testHashObject(t, obj, expected)
 	default:
 		t.Fatalf("no tester for value %v of type %T", obj, obj)
 	}
+}
+
+func unwrapPrimitiveObj(obj object.Object) (any, error) {
+	switch obj := obj.(type) {
+	case *object.Boolean:
+		return obj.Value, nil
+	case *object.Integer:
+		return obj.Value, nil
+	case *object.String:
+		return obj.Value, nil
+	case *object.Null:
+		return nil, nil
+	}
+	return nil, errors.New("invalid primitive object")
 }
 
 func testIntegerObject(t *testing.T, obj object.Object, expected int) {
@@ -98,6 +115,20 @@ func testArrayObject(t *testing.T, obj object.Object, expected []any) {
 
 	for i, el := range array.Elements {
 		testObject(t, el, expected[i])
+	}
+}
+
+func testHashObject(t *testing.T, obj object.Object, expected map[any]any) {
+	r := require.New(t)
+
+	hash, ok := obj.(*object.Hash)
+	r.Truef(ok, "obj is not *object.Hash, got %T (%v)", obj, obj)
+
+	r.Equal(len(expected), len(hash.Pairs))
+	for _, pair := range hash.Pairs {
+		keyPrim, err := unwrapPrimitiveObj(pair.Key)
+		r.Nil(err)
+		testObject(t, pair.Value, expected[keyPrim])
 	}
 }
 

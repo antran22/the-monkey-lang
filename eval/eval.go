@@ -36,6 +36,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return object.NULL
 	case *ast.ArrayLiteral:
 		return evalArrayLiteral(node, env)
+	case *ast.HashLiteral:
+		return evalHashLiteral(node, env)
 
 	// Expressions
 

@@ -1,6 +1,8 @@
 package object
 
-import "bytes"
+import (
+	"bytes"
+)
 
 const ARRAY_OBJ = "ARRAY"
 

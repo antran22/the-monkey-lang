@@ -6,7 +6,6 @@ import (
 )
 
 // Array Literal
-
 type ArrayLiteral struct {
 	Token    token.Token
 	Elements []Expression
@@ -30,6 +29,43 @@ func (a *ArrayLiteral) String() string {
 
 func (a *ArrayLiteral) TokenLiteral() string {
 	return a.Token.Literal
+}
+
+// Hash literal
+
+type HashKeyValuePair struct {
+	Key   Expression
+	Value Expression
+}
+
+type HashLiteral struct {
+	Token token.Token
+	Pairs []HashKeyValuePair
+}
+
+var _ Expression = (*HashLiteral)(nil)
+
+func (h *HashLiteral) String() string {
+	var out bytes.Buffer
+	out.WriteString("{")
+
+	for idx, pair := range h.Pairs {
+		if idx > 0 {
+			out.WriteString(", ")
+		}
+
+		out.WriteString(pair.Key.String())
+		out.WriteString(":")
+		out.WriteString(pair.Value.String())
+	}
+
+	out.WriteString("}")
+
+	return out.String()
+}
+
+func (h *HashLiteral) TokenLiteral() string {
+	return h.Token.Literal
 }
 
 // Indexing Expression

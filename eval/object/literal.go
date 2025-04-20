@@ -1,6 +1,9 @@
 package object
 
-import "fmt"
+import (
+	"fmt"
+	"hash/fnv"
+)
 
 const (
 	INTEGER_OBJ ObjectType = "INTEGER"
@@ -15,7 +18,16 @@ type String struct {
 	Value string
 }
 
-var _ Object = (*String)(nil)
+func NewString(v string) *String {
+	return &String{
+		Value: v,
+	}
+}
+
+var (
+	_ Object   = (*String)(nil)
+	_ Hashable = (*String)(nil)
+)
 
 func (s *String) Inspect() string {
 	return `"` + s.Value + `"`
@@ -27,6 +39,16 @@ func (s *String) Type() ObjectType {
 
 func (s *String) IsTruthy() bool {
 	return len(s.Value) > 0
+}
+
+func (s *String) Hash() HashKey {
+	h := fnv.New64a()
+	h.Write([]byte(s.Value))
+
+	return HashKey{
+		Type:  s.Type(),
+		Value: h.Sum64(),
+	}
 }
 
 func (a *String) Index(i int) Object {
@@ -62,13 +84,23 @@ type Integer struct {
 	Value int
 }
 
+var (
+	_ Object   = (*Integer)(nil)
+	_ Hashable = (*Integer)(nil)
+)
+
 func NewInt(value int) *Integer {
 	return &Integer{
 		Value: value,
 	}
 }
 
-var _ Object = (*Integer)(nil)
+func (i *Integer) Hash() HashKey {
+	return HashKey{
+		Type:  INTEGER_OBJ,
+		Value: uint64(i.Value),
+	}
+}
 
 func (i *Integer) Inspect() string {
 	return fmt.Sprintf("%d", i.Value)
@@ -93,7 +125,23 @@ var (
 	FALSE = &Boolean{Value: false}
 )
 
-var _ Object = (*Boolean)(nil)
+var (
+	_ Object   = (*Boolean)(nil)
+	_ Hashable = (*Boolean)(nil)
+)
+
+func (i *Boolean) Hash() HashKey {
+	var value uint64
+	if i.Value {
+		value = 0
+	} else {
+		value = 1
+	}
+	return HashKey{
+		Type:  BOOLEAN_OBJ,
+		Value: value,
+	}
+}
 
 func (b *Boolean) Inspect() string {
 	return fmt.Sprintf("%t", b.Value)
@@ -126,9 +174,19 @@ func NewFromObject(obj Object) *Boolean {
 
 var NULL = &Null{}
 
-var _ Object = (*Null)(nil)
-
 type Null struct{}
+
+var (
+	_ Object   = (*Null)(nil)
+	_ Hashable = (*Null)(nil)
+)
+
+func (n *Null) Hash() HashKey {
+	return HashKey{
+		Type:  NULL_OBJ,
+		Value: 0,
+	}
+}
 
 func (n *Null) IsTruthy() bool {
 	return false

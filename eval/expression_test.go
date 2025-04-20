@@ -82,3 +82,28 @@ func TestEvalStringExpression(t *testing.T) {
 
 	testExpressionEvaluation(t, testCases, []errorTestCase{})
 }
+
+func TestEvalArrayExpression(t *testing.T) {
+	happyCases := []happyTestCase{
+		{`["hello", 1, 2] + [3]`, []any{"hello", 1, 2, 3}},
+		{`["hello", 1, 2] + []`, []any{"hello", 1, 2}},
+	}
+
+	errorCases := []errorTestCase{
+		{`["hello", 1, 2] + 3`, "unsupported operation: ARRAY `+` INTEGER"},
+		{`["hello", 1, 2] + "hello"`, "unsupported operation: ARRAY `+` STRING"},
+	}
+	testExpressionEvaluation(t, happyCases, errorCases)
+}
+
+func TestEvalHashExpression(t *testing.T) {
+	happyCases := []happyTestCase{
+		{`{"hello": 1} + {"hi": true}`, map[any]any{"hello": 1, "hi": true}},
+		{`{"hello": 1} + {"hello": 3}`, map[any]any{"hello": 3}},
+	}
+
+	errorCases := []errorTestCase{
+		{`{"hello": 1} + 3`, "unsupported operation: HASH `+` INTEGER"},
+	}
+	testExpressionEvaluation(t, happyCases, errorCases)
+}

@@ -1,6 +1,7 @@
 package eval
 
 import (
+	"maps"
 	"monkey/ast"
 	"monkey/eval/object"
 )
@@ -46,8 +47,34 @@ func evalInfixExpression(left object.Object, operator ast.Operator, right object
 		return evalBooleanInfixExpression(left.(*object.Boolean), operator, right.(*object.Boolean))
 	case lt == object.STRING_OBJ && rt == object.STRING_OBJ:
 		return evalStringInfixExpression(left.(*object.String), operator, right.(*object.String))
+	case lt == object.ARRAY_OBJ && rt == object.ARRAY_OBJ:
+		return evalArrayInfixExpression(left.(*object.Array), operator, right.(*object.Array))
+	case lt == object.HASH_OBJ && rt == object.HASH_OBJ:
+		return evalHashInfixExpression(left.(*object.Hash), operator, right.(*object.Hash))
 	default:
 		return object.UnknownInfixOpError(left, string(operator), right)
+	}
+}
+
+func evalHashInfixExpression(left *object.Hash, operator ast.Operator, right *object.Hash) object.Object {
+	if operator != ast.OP_PLUS {
+		return object.UnknownInfixOpError(left, string(operator), right)
+	}
+	r := map[object.HashKey]object.HashPair{}
+	maps.Copy(r, left.Pairs)
+	maps.Copy(r, right.Pairs)
+	return &object.Hash{
+		Pairs: r,
+	}
+}
+
+func evalArrayInfixExpression(left *object.Array, operator ast.Operator, right *object.Array) object.Object {
+	if operator != ast.OP_PLUS {
+		return object.UnknownInfixOpError(left, string(operator), right)
+	}
+
+	return &object.Array{
+		Elements: append(left.Elements, right.Elements...),
 	}
 }
 

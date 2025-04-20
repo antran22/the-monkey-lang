@@ -2,6 +2,7 @@ package object
 
 import (
 	"fmt"
+	"hash/fnv"
 	"monkey/ast"
 )
 
@@ -11,7 +12,10 @@ type Error struct {
 	Message string
 }
 
-var _ Object = (*Error)(nil)
+var (
+	_ Object   = (*Error)(nil)
+	_ Hashable = (*Error)(nil)
+)
 
 func (e *Error) Type() ObjectType { return ERROR_OBJ }
 
@@ -21,6 +25,15 @@ func (e *Error) Inspect() string {
 
 func (e *Error) IsTruthy() bool {
 	return true
+}
+
+func (e *Error) Hash() HashKey {
+	h := fnv.New64a()
+	h.Write([]byte(e.Message))
+	return HashKey{
+		Type:  ERROR_OBJ,
+		Value: h.Sum64(),
+	}
 }
 
 func NewError(message string) *Error {
@@ -51,9 +64,13 @@ func InvalidExpressionError(node ast.Node) *Error {
 	return NewErrorf("unable to evaluate expression: (%T) %v", node, node)
 }
 
-// array error format
+// array & hash error format
 func ArrayOutOfBoundError(idx int) *Error {
 	return NewErrorf("index out of bound: %d", idx)
+}
+
+func TypeNotHashable(t ObjectType) *Error {
+	return NewErrorf("value type not usable as hash key: %s", t)
 }
 
 // function error format

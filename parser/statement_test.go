@@ -103,22 +103,3 @@ return y;
 		testLiteralExpression(t, returnStmt.Value, expectedReturns[i])
 	}
 }
-
-// Block Statement
-
-func TestBlockStatement(t *testing.T) {
-	r := require.New(t)
-
-	input := `{
-let x = 1;
-return 2;
-}`
-
-	program := makeProgram(input, t)
-	r.Len(program.Statements, 1)
-
-	bl, ok := program.Statements[0].(*ast.BlockStatement)
-
-	r.Truef(ok, "not an *ast.BlockStatement")
-	r.Len(bl.Statements, 2)
-}
