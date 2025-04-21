@@ -62,7 +62,6 @@ func evalIndexingOperator(node *ast.IndexExpression, env *object.Environment) ob
 	}
 
 	switch leftExp.Type() {
-
 	case object.ARRAY_OBJ:
 		return evalArrayIndexing(leftExp.(*object.Array), idxExp)
 	case object.HASH_OBJ:
@@ -74,17 +73,16 @@ func evalIndexingOperator(node *ast.IndexExpression, env *object.Environment) ob
 }
 
 func evalArrayIndexing(array *object.Array, index object.Object) object.Object {
-	if index.Type() != object.INTEGER_OBJ {
+	switch index.Type() {
+	case object.INTEGER_OBJ:
+		idxInt := index.(*object.Integer).Value
+		return array.Index(idxInt)
+	case object.RANGE_OBJ:
+		r := index.(*object.Range)
+		return array.Slice(r.Start, r.End, r.Step)
+	default:
 		return object.UnknownInfixOpError(array, "INDEX", index)
 	}
-
-	idxInt := index.(*object.Integer).Value
-
-	if idxInt < 0 || idxInt >= len(array.Elements) {
-		return object.ArrayOutOfBoundError(idxInt)
-	}
-
-	return array.Elements[idxInt]
 }
 
 func evalHashIndexing(hash *object.Hash, index object.Object) object.Object {

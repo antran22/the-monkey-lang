@@ -58,7 +58,7 @@ func (a *String) Index(i int) Object {
 	return &String{Value: string(a.Value[i])}
 }
 
-func (a *String) Slice(start, end int) Object {
+func (a *String) Slice(start, end, step int) Object {
 	n := len(a.Value)
 
 	if start < 0 || start > n {

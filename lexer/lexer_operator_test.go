@@ -34,6 +34,7 @@ func TestDigraphOperator(t *testing.T) {
 2 <= 2;
 2 >= 2;
 2 != 2;
+2 .. 2;
 true && true;
 false || true;
 `
@@ -55,6 +56,11 @@ false || true;
 
 		{token.INT, "2"},
 		{token.NOT_EQ, "!="},
+		{token.INT, "2"},
+		{token.SEMICOLON, ";"},
+
+		{token.INT, "2"},
+		{token.D_DOT, ".."},
 		{token.INT, "2"},
 		{token.SEMICOLON, ";"},
 

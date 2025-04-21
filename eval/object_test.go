@@ -85,6 +85,37 @@ func TestHashLiterals(t *testing.T) {
 	testExpressionEvaluation(t, happyCases, []errorTestCase{})
 }
 
+func TestArraySliceOperator(t *testing.T) {
+	happyCases := []happyTestCase{
+		{
+			`[1, 2, 3, 4][0..2]`,
+			[]any{1, 2},
+		},
+		{
+			`[1, 2, 3, 4][range(0, 2)]`,
+			[]any{1, 2},
+		},
+		{
+			`[1, 2, 3, 4][range(0, 4, 2)]`,
+			[]any{1, 3},
+		},
+		{
+			`[1, 2, 3, 4][2..0]`,
+			[]any{3, 2},
+		},
+		{
+			`[1, 2, 3, 4][range(2, 0)]`,
+			[]any{3, 2},
+		},
+		{
+			`[1, 2, 3, 4][range(3, -1, -2)]`,
+			[]any{4, 2},
+		},
+	}
+
+	testExpressionEvaluation(t, happyCases, []errorTestCase{})
+}
+
 func TestHashIndexingOperator(t *testing.T) {
 	commonSetup := `
       let two = "two";

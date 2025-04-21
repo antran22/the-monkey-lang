@@ -74,6 +74,29 @@ func TestEvalIntegerExpression(t *testing.T) {
 	testExpressionEvaluation(t, testCases, []errorTestCase{})
 }
 
+func TestNullExpression(t *testing.T) {
+	testCases := []happyTestCase{
+		{`"hello" == null`, false},
+		{`"hello" != null`, true},
+
+		{`1 == null`, false},
+		{`1 != null`, true},
+
+		{`true == null`, false},
+		{`true != null`, true},
+
+		{`false == null`, false},
+		{`false != null`, true},
+
+		{`[1, 2] == null`, false},
+		{`[1, 2] != null`, true},
+
+		{`null == null`, true},
+		{`null != null`, false},
+	}
+	testExpressionEvaluation(t, testCases, []errorTestCase{})
+}
+
 func TestEvalStringExpression(t *testing.T) {
 	testCases := []happyTestCase{
 		{`"hello"`, "hello"},

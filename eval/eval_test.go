@@ -71,6 +71,8 @@ func testObject(t *testing.T, obj object.Object, expected any) {
 		testArrayObject(t, obj, expected)
 	case map[any]any:
 		testHashObject(t, obj, expected)
+	case *object.Range:
+		testRangeObject(t, obj, expected)
 	default:
 		t.Fatalf("no tester for value %v of type %T", obj, obj)
 	}
@@ -130,6 +132,17 @@ func testHashObject(t *testing.T, obj object.Object, expected map[any]any) {
 		r.Nil(err)
 		testObject(t, pair.Value, expected[keyPrim])
 	}
+}
+
+func testRangeObject(t *testing.T, obj object.Object, expected *object.Range) {
+	r := require.New(t)
+
+	ran, ok := obj.(*object.Range)
+	r.Truef(ok, "obj is not *object.Range, got %T (%v)", obj, obj)
+
+	r.Equal(expected.Start, ran.Start)
+	r.Equal(expected.End, ran.End)
+	r.Equal(expected.Step, ran.Step)
 }
 
 func testStringObject(t *testing.T, obj object.Object, expected string) {

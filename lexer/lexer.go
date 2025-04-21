@@ -65,6 +65,12 @@ func (l *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.B_OR, l.ch)
 		}
+	case '.':
+		if digraph, ok := l.expectPeekDigraph('.'); ok {
+			tok = token.Token{Type: token.D_DOT, Literal: digraph}
+		} else {
+			tok = newToken(token.DOT, l.ch)
+		}
 	case '^':
 		tok = newToken(token.XOR, l.ch)
 	case '(':

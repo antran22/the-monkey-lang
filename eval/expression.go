@@ -51,8 +51,22 @@ func evalInfixExpression(left object.Object, operator ast.Operator, right object
 		return evalArrayInfixExpression(left.(*object.Array), operator, right.(*object.Array))
 	case lt == object.HASH_OBJ && rt == object.HASH_OBJ:
 		return evalHashInfixExpression(left.(*object.Hash), operator, right.(*object.Hash))
+	case lt == object.NULL_OBJ || rt == object.NULL_OBJ:
+		return evalNullInfixExpression(left, operator, right)
 	default:
 		return object.UnknownInfixOpError(left, string(operator), right)
+	}
+}
+
+func evalNullInfixExpression(left object.Object, operator ast.Operator, right object.Object) object.Object {
+	switch operator {
+	case ast.OP_EQ:
+		return object.NewBoolean(left == right)
+	case ast.OP_NEQ:
+		return object.NewBoolean(left != right)
+	default:
+		return object.UnknownInfixOpError(left, string(operator), right)
+
 	}
 }
 
@@ -136,6 +150,10 @@ func evalIntegerInfixExpression(left *object.Integer, operator ast.Operator, rig
 		return object.NewBoolean(lv >= rv)
 	case ast.OP_LE:
 		return object.NewBoolean(lv <= rv)
+
+	case ast.OP_RANGE:
+		return object.NewImplicitRange(lv, rv)
+
 	default:
 		return object.UnknownInfixOpError(left, string(operator), right)
 	}

@@ -24,7 +24,7 @@ func TestArray(t *testing.T) {
 	r.Equal(2, arr.Index(1).(*object.Integer).Value)
 	r.Equal(4, arr.Index(2).(*object.Integer).Value)
 
-	arr2 := arr.Slice(0, 1).(*object.Array)
+	arr2 := arr.Slice(0, 1, 1).(*object.Array)
 
 	r.Equal(1, len(arr2.Elements))
 }

@@ -13,6 +13,7 @@ const (
 	AND_OR       // && , ||
 	EQUALS       // ==
 	LESS_GREATER // > or <
+	RANGE        // :
 	SUM          // +
 	PRODUCT      // *
 	BITWISE      // ^, &, |
@@ -30,8 +31,9 @@ var tokenPrecendence = map[token.TokenType]precedenceLevel{
 	token.LE: LESS_GREATER,
 	token.GE: LESS_GREATER,
 
-	token.AND: AND_OR,
-	token.OR:  AND_OR,
+	token.D_DOT: RANGE,
+	token.AND:   AND_OR,
+	token.OR:    AND_OR,
 
 	token.PLUS:  SUM,
 	token.MINUS: SUM,
@@ -90,6 +92,8 @@ func (p *Parser) registerTokenTypeParser() {
 	p.registerInfix(token.MINUS, p.parseInfixExpression)
 	p.registerInfix(token.SLASH, p.parseInfixExpression)
 	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
+
+	p.registerInfix(token.D_DOT, p.parseInfixExpression)
 
 	p.registerInfix(token.EQ, p.parseInfixExpression)
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)

@@ -17,6 +17,8 @@ const (
 
 	// Operator
 	ASSIGN = "="
+	DOT    = "."
+	D_DOT  = ".." // for range operator
 	// Arithmetic
 	PLUS     = "+"
 	MINUS    = "-"

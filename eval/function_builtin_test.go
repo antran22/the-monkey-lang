@@ -1,6 +1,7 @@
 package eval_test
 
 import (
+	"monkey/eval/object"
 	"testing"
 )
 
@@ -109,7 +110,28 @@ func TestBuiltinMap(t *testing.T) {
 		{`map([true, false], fn (a, idx) {return idx;})`, []any{0, 1}},
 	}
 
-	errorCases := []errorTestCase{}
+	errorCases := []errorTestCase{
+		{`map()`, "too few argument for `map`, expected at least 2, got 0"},
+		{`map([])`, "too few argument for `map`, expected at least 2, got 1"},
+	}
+
+	testExpressionEvaluation(t, happyCases, errorCases)
+}
+
+func TestBuiltinRange(t *testing.T) {
+	happyCases := []happyTestCase{
+		{`range(1, 3)`, &object.Range{Start: 1, End: 3, Step: 1}},
+		{`range(1, 100, 2)`, &object.Range{Start: 1, End: 100, Step: 2}},
+	}
+
+	errorCases := []errorTestCase{
+		{`range()`, "too few argument for `range`, expected at least 2, got 0"},
+		{`range(1)`, "too few argument for `range`, expected at least 2, got 1"},
+		{`range([], [])`, "wrong value type for argument #0 for `range`, expected INTEGER, got ARRAY"},
+		{`range(1, 2, 0)`, "invalid range: `step` must not be zero"},
+		{`range(1, 2, -1)`, "invalid range: `step` must be positive if start < end"},
+		{`range(2, 1, 1)`, "invalid range: `step` must be negative if start > end"},
+	}
 
 	testExpressionEvaluation(t, happyCases, errorCases)
 }

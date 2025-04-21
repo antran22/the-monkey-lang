@@ -194,6 +194,14 @@ func TestParsingPrecedence(t *testing.T) {
 			"add(a * b[2], b[1], 2 * [1, 2][1])",
 			"add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))",
 		},
+		{
+			"a[4..5]",
+			"(a[(4 .. 5)])",
+		},
+		{
+			"a[4..5+6]",
+			"(a[(4 .. (5 + 6))])",
+		},
 	}
 
 	for i, tt := range tests {

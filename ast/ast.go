@@ -53,6 +53,8 @@ const (
 	OP_EQ  Operator = "=="
 	OP_NEQ Operator = "!="
 
+	OP_RANGE Operator = ".."
+
 	// logic
 	OP_NEGATE Operator = "!"
 	OP_AND    Operator = "&&"

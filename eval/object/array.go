@@ -4,7 +4,7 @@ import (
 	"bytes"
 )
 
-const ARRAY_OBJ = "ARRAY"
+const ARRAY_OBJ ObjectType = "ARRAY"
 
 type Array struct {
 	Elements []Object
@@ -42,22 +42,32 @@ func (a *Array) Index(i int) Object {
 	return a.Elements[i]
 }
 
-func (a *Array) Slice(start, end int) Object {
+func (a *Array) Slice(start, end, step int) Object {
 	n := len(a.Elements)
 
 	if start < 0 || start > n {
 		return ArrayOutOfBoundError(start)
 	}
 
-	if end < 0 || end > n {
-		return ArrayOutOfBoundError(start)
+	if end < -1 || end > n {
+		return ArrayOutOfBoundError(end)
 	}
 
-	if start > end+1 {
-		return NewErrorf("cannot take slice from %d to %d", start, end)
+	var result []Object
+	dir := 1
+	if start > end {
+		dir = -1
+	}
+
+	if start <= end && step == 1 {
+		result = a.Elements[start:end]
+	} else {
+		for i := start; i*dir < end*dir; i += step {
+			result = append(result, a.Elements[i])
+		}
 	}
 
 	return &Array{
-		Elements: a.Elements[start:end],
+		Elements: result,
 	}
 }
